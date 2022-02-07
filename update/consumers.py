@@ -1,10 +1,6 @@
 from asgiref.sync import async_to_sync
-from channels.generic.websocket import WebsocketConsumer
 from channels.layers import get_channel_layer
 import json
-from blockchain.errors import ErrorHandler
-from threading import Thread
-from django.core.management import call_command
 from channels.generic.websocket import AsyncWebsocketConsumer
 
 
