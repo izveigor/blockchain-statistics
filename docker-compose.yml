@@ -1,0 +1,19 @@
+version: '3'
+
+
+services:
+
+  web:
+    build: .
+    command: bash -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8080 & python manage.py start_websocket"
+    volumes: 
+      - .:/code
+    ports:
+      - 8080:8080
+    links:
+     - redis
+
+  redis:
+    image: redis
+    ports: 
+      - 6379:6379
