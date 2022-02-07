@@ -1,4 +1,4 @@
-# Blockchain statistics [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/izveigor/blockchain-statistics/LICENSE)
+# Blockchain statistics [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/izveigor/blockchain-statistics/blob/main/LICENSE)
 The django-powered application about blockchain.
 API site: https://www.blockchain.com/
 ## Opportunities:
