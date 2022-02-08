@@ -8,7 +8,8 @@ API site: https://www.blockchain.com/
 ## Installation
 If you want to download some latest blocks, change the docker-compose file:
 ```
-command: bash -c "python manage.py migrate && python manage.py download_blocks [number of blocks] && python manage.py runserver 0.0.0.0:8080 & python manage.py start_websocket"
+command: bash -c "python manage.py migrate && python manage.py download_blocks [number of blocks] && 
+                  python manage.py runserver 0.0.0.0:8080 & python manage.py start_websocket"
 ```
 The range of number of blocks from 1 to 10.
 

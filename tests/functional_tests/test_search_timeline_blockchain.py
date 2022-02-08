@@ -1,6 +1,6 @@
 from .base import FunctionalTest
 from selenium.webdriver.common.keys import Keys
-from tests.helpers import JsonData, create_node
+from tests.helpers import JsonData, create_node, ATTRIBUTES_OF_BLOCKCHAIN
 from update.blockchain import BlockchainUpdate
 from unittest.mock import patch
 from status.models import SegmentNode
@@ -9,17 +9,6 @@ from status.models import SegmentNode
 class TimelineTest(FunctionalTest):
     '''Functional test search timeline blockchain (models.SegmentNode)
     '''
-    def _get_dict_of_inputs(self):
-        date_start = self._get_element_by_id('form_date_start')
-        time_start = self._get_element_by_id('form_time_start')
-        date_end = self._get_element_by_id('form_date_end')
-        time_end = self._get_element_by_id('form_time_end')
-        return {
-            "date_start": date_start,
-            "time_start": time_start,
-            "date_end": date_end,
-            "time_end": time_end
-        }
     
     def test_empty(self):
         self.browser.get(self.live_server_url)
@@ -111,23 +100,8 @@ class TimelineTest(FunctionalTest):
                     self._get_element_by_id('timeline_' + key + '_' + object_model).text
                 )
         
-        attributes = (
-            "number_of_satoshi",
-            "number_of_blocks",
-            "number_of_transactions",
-            "time_start",
-            "new_block",
-            "the_most_expensive_block",
-            "the_cheapest_block",
-            "the_largest_number_of_transactions",
-            "the_least_number_of_transactions",
-            "the_largest_transactions_for_inputs",
-            "the_largest_transactions_for_outputs",
-            "the_most_expensive_transactions"
-        )
-        
-        attributes_string = attributes[:4]
-        attributes_objects = attributes[5:]
+        attributes_string = ATTRIBUTES_OF_BLOCKCHAIN[:4]
+        attributes_objects = ATTRIBUTES_OF_BLOCKCHAIN[5:]
 
         for field in attributes_string:
             self.assertEqual(

@@ -127,7 +127,6 @@ GetLatestBlockHeight = _GetLatestBlockHeight()
 
 async def client():
     async for websocket in websockets.connect(URL['WS_LATEST_BLOCK']):
-        print("Connected to Websocket server")
         await websocket.send(json.dumps({'op': 'blocks_sub'}))
         try:
             async for message in websocket:
@@ -135,5 +134,4 @@ async def client():
                 result = json_decoder(message)['x']['hash']
                 await loop.run_in_executor(None, BlockData, result)
         except websockets.ConnectionClosed:
-            print("Connection lost! Retrying..")
             continue

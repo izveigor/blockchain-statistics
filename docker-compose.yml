@@ -5,7 +5,8 @@ services:
 
   web:
     build: .
-    command: bash -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8080 & python manage.py start_websocket"
+    command: bash -c "python manage.py migrate && 
+                      python manage.py runserver 0.0.0.0:8080 & python manage.py start_websocket"
     volumes: 
       - .:/code
     ports:

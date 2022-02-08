@@ -29,8 +29,8 @@ class ViewsTest(UnitTest):
                 list(Block.objects.all()[(number-1)*5:number*5])
             )
 
-    @patch("update.blockchain.BlockchainUpdate._send_message", return_value=empty_function)
-    def test_context(self, mock_send_message):
+    @patch("update.blockchain.BlockchainUpdate._send_message", empty_function)
+    def test_context(self):
         data_for_blockchain_model = get_data_for_blockchain(JsonData.first_block_result)
 
         BlockchainUpdate(**data_for_blockchain_model)

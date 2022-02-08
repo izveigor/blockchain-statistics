@@ -110,3 +110,19 @@ def get_data_for_blockchain(block_data):
 
 def empty_function(*args, **kwargs):
     pass
+
+
+ATTRIBUTES_OF_BLOCKCHAIN = (
+    "number_of_satoshi",
+    "number_of_blocks",
+    "number_of_transactions",
+    "time_start",
+    "new_block",
+    "the_most_expensive_block",
+    "the_cheapest_block",
+    "the_largest_number_of_transactions",
+    "the_least_number_of_transactions",
+    "the_largest_transactions_for_inputs",
+    "the_largest_transactions_for_outputs",
+    "the_most_expensive_transactions"
+)
