@@ -1,12 +1,13 @@
 from .base import UnitTest
-from tests.helpers import JsonData, get_data_for_blockchain, create_blocks, empty_function
+from tests.helpers import JsonData, create_blocks, empty_function
 from status.models import Block, Blockchain, SegmentNode
 from unittest.mock import patch
-from update.blockchain import BlockchainUpdate
+from update.blockchain import blockchain_update
 from status.forms import TimelineBlockchainForm
 from tests.helpers import create_node, JsonData
 from blockchain.helpers import json_decoder
 import json
+from django.contrib.messages import get_messages
 
 
 class ViewsTest(UnitTest):
@@ -29,11 +30,9 @@ class ViewsTest(UnitTest):
                 list(Block.objects.all()[(number-1)*5:number*5])
             )
 
-    @patch("update.blockchain.BlockchainUpdate._send_message", empty_function)
+    @patch("update.blockchain.send_data", empty_function)
     def test_context(self):
-        data_for_blockchain_model = get_data_for_blockchain(JsonData.first_block_result)
-
-        BlockchainUpdate(**data_for_blockchain_model)
+        blockchain_update(JsonData.first_block_result, JsonData.first_data_from_transactions)
         response = self.client.get('/')
         context = response.context
 
@@ -51,7 +50,8 @@ class ViewsTest(UnitTest):
         segment_tree = JsonData.segment_tree.pop('second_node')
 
         for i in range(1, 2):
-            create_node(i, segment_tree['body'][str(i)]['the_most_expensive_block'])
+            data_for_testing = segment_tree['body'][str(i)]
+            create_node(i, data_for_testing['the_most_expensive_block'], data_for_testing['the_largest_transaction_for_inputs'])
 
         response = self.client.post('/search', JsonData.timeline_json, content_type="application/json")
         self.assertEqual(response.status_code, 200)
@@ -63,16 +63,17 @@ class ViewsTest(UnitTest):
     
     def test_error_form(self):
         segment_tree = JsonData.segment_tree.pop('second_node')
-        create_node(1, segment_tree['body']["1"]['the_most_expensive_block'])
+        data_for_testing = segment_tree['body']["1"]
+        create_node(1, data_for_testing['the_most_expensive_block'], data_for_testing['the_largest_transaction_for_inputs'])
 
         timeline = JsonData.timeline
         timeline['time_start'], timeline['time_end'] = timeline['time_end'], timeline['time_start']
 
         response = self.client.post('/search', json.dumps(timeline), content_type="application/json")
-        self.assertEqual(response.status_code, 200)
-
+        self.assertEqual(response.status_code, 400)
+        
+        messages = list(get_messages(response.wsgi_request))
         self.assertEqual(
-            json_decoder(response.content)['errors'],
-            "Start time greater than end time! Please reload the page!"
+            str(messages[0]),
+            "Start time greater than end time!"
         )
-

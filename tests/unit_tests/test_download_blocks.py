@@ -2,17 +2,16 @@ from io import StringIO
 from django.core.management import call_command
 from .base import UnitTest
 from unittest.mock import patch, call
-from tests.helpers import JsonData, empty_function
+from tests.helpers import JsonData
 from django.core.management.base import CommandError
 from status.models import Block
 
 
 class DownloadBlocksTest(UnitTest):
     '''Unit test command "download_blocks"'''
-    @patch('update.management.commands.download_blocks.BlockData')
+    @patch('update.management.commands.download_blocks.get_block_api')
     def test_with_one_created_block(self, mock_block_data):
         first_block_result = JsonData.first_block_result
-        first_block_result.pop('tx')
         Block.objects.create(**first_block_result)
 
         out = StringIO()
@@ -24,8 +23,8 @@ class DownloadBlocksTest(UnitTest):
             'Waiting time: 10\nComplete download 1 blocks\n'
         )
 
-    @patch('update.management.commands.download_blocks.BlockData')
-    @patch('update.management.commands.download_blocks.GetLatestBlockHeight')
+    @patch('update.management.commands.download_blocks.get_block_api')
+    @patch('update.management.commands.download_blocks.get_latest_block_height')
     def test_command_output_without_blocks(self, mock_get_height, mock_block_data):
         height = 100000
         mock_get_height.return_value = height
@@ -54,8 +53,8 @@ class DownloadBlocksTest(UnitTest):
         with self.assertRaisesRegex(CommandError, 'Range of number of blocks must be from 1 to 10, not -1'):
             call_command('download_blocks', '-1')
     
-    @patch('update.management.commands.download_blocks.BlockData')
-    @patch('update.management.commands.download_blocks.GetLatestBlockHeight')
+    @patch('update.management.commands.download_blocks.get_block_api')
+    @patch('update.management.commands.download_blocks.get_latest_block_height')
     def test_height_min(self, mock_get_height, mock_block_data):
         mock_get_height.return_value = 3
         with self.assertRaisesRegex(CommandError, 'Block height must be greater than 0'):

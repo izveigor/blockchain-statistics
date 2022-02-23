@@ -31,6 +31,15 @@ class FunctionalTest(ChannelsLiveServerTestCase):
         )
         return element
     
+    def _get_element_by_class(self, class_):
+        element = WebDriverWait(self.browser, 5).until(
+            EC.presence_of_element_located((
+                By.CLASS_NAME,
+                class_
+            ))
+        )
+        return element
+    
     @classmethod
     def tearDownClass(self):
         self.browser.quit()

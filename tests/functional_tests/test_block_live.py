@@ -1,11 +1,10 @@
 from .base import FunctionalTest
 from selenium.webdriver.common.by import By
 from status.models import Block
-from tests.helpers import create_blocks, get_random_block_data
-from update.latest_block import LatestBlock
-from unittest.mock import patch
+from tests.helpers import create_blocks, get_random_block_data, ATTRIBUTES_OF_BLOCK, JsonData
 from selenium.common.exceptions import TimeoutException
 from blockchain.constants import NUMBER_OF_BLOCKS_ON_A_PAGE
+from blockchain.send import send_data
 
 
 class TestBlockLive(FunctionalTest):
@@ -14,16 +13,11 @@ class TestBlockLive(FunctionalTest):
     def _check_fields_block(self, blocks_model):
         block_live_update = self._get_element_by_id('body_block_live_update')
         for block_model, row in zip(blocks_model, block_live_update.find_elements(By.TAG_NAME, 'tr')):
-            for model_field, html in zip(('height', 'hash'), row.find_elements(By.TAG_NAME, 'td')):
+            for model_field, html in zip(ATTRIBUTES_OF_BLOCK, row.find_elements(By.TAG_NAME, 'td')):
                 self.assertEqual(
                     str(getattr(block_model, model_field)),
                     html.text
                 )
-
-    def _mock_latest_block_call(self):
-        data_about_block = get_random_block_data()
-        block = Block.objects.create(**data_about_block)
-        self._send_message(block)
     
     def test_empty(self):
         self.browser.get(self.live_server_url)
@@ -39,10 +33,11 @@ class TestBlockLive(FunctionalTest):
 
         self._check_fields_block(Block.objects.all())
     
-    @patch('update.latest_block._NewLatestBlock.__call__', _mock_latest_block_call)
     def test_send_latest_block(self):
         self.browser.get(self.live_server_url)
-        LatestBlock()
+        block = get_random_block_data()
+        Block.objects.create(**block)
+        send_data(block, JsonData.first_blockchain)
         self._check_fields_block(Block.objects.all())
 
         create_blocks(NUMBER_OF_BLOCKS_ON_A_PAGE)
@@ -54,12 +49,13 @@ class TestBlockLive(FunctionalTest):
             next_.get_attribute('disabled')
         )
 
-    @patch('update.latest_block._NewLatestBlock.__call__', _mock_latest_block_call)
     def test_messages_overflow(self):
         self.browser.get(self.live_server_url)
 
         for i in range(NUMBER_OF_BLOCKS_ON_A_PAGE+1):
-            LatestBlock()
+            block = get_random_block_data()
+            Block.objects.create(**block)
+            send_data(block, JsonData.first_blockchain)
     
         self._check_fields_block(Block.objects.all()[:NUMBER_OF_BLOCKS_ON_A_PAGE])
 

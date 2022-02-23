@@ -3,14 +3,11 @@ from django.db.models import Max
 
 
 class Transaction(models.Model):
-    '''Model of transaction'''
-
-    hash = models.CharField(max_length=32)
+    '''Used tx indexes'''
     tx_index = models.IntegerField(primary_key=True)
-    time = models.IntegerField()
-    block_index = models.ForeignKey('Block', on_delete=models.CASCADE)
-    inputs = models.JSONField()
-    out = models.JSONField()
+
+    class Meta:
+        ordering = ['-tx_index']
 
 
 class Block(models.Model):
@@ -35,15 +32,19 @@ class Blockchain(models.Model):
 
     # Block
     new_block = models.JSONField()
+    new_block_the_largest_transaction_for_inputs = models.JSONField()
+    new_block_the_largest_transaction_for_outputs = models.JSONField()
+    new_block_the_most_expensive_transaction = models.JSONField()
+
     the_most_expensive_block = models.JSONField()
     the_cheapest_block = models.JSONField()
     the_largest_number_of_transactions = models.JSONField()
     the_least_number_of_transactions = models.JSONField()
 
     # Transaction
-    the_largest_transactions_for_inputs = models.JSONField()
-    the_largest_transactions_for_outputs = models.JSONField()
-    the_most_expensive_transactions = models.JSONField()
+    the_largest_transaction_for_inputs = models.JSONField()
+    the_largest_transaction_for_outputs = models.JSONField()
+    the_most_expensive_transaction = models.JSONField()
 
     class Meta:
         ordering = ["-time_start"]
@@ -75,11 +76,14 @@ class NodeManager(models.Manager):
         block_index=blockchain.new_block['block_index']
         node = self.create(
             time_start=blockchain.time_start,
-            price = blockchain.new_block['price'],
-            the_most_expensive_block = blockchain.new_block,
-            the_cheapest_block = blockchain.new_block,
-            the_largest_number_of_transactions = blockchain.new_block,
-            the_least_number_of_transactions = blockchain.new_block,
+            price=blockchain.new_block['price'],
+            the_most_expensive_block=blockchain.new_block,
+            the_cheapest_block=blockchain.new_block,
+            the_largest_number_of_transactions=blockchain.new_block,
+            the_least_number_of_transactions=blockchain.new_block,
+            the_largest_transaction_for_inputs=blockchain.new_block_the_largest_transaction_for_inputs,
+            the_largest_transaction_for_outputs=blockchain.new_block_the_largest_transaction_for_outputs,
+            the_most_expensive_transaction=blockchain.new_block_the_most_expensive_transaction,
         )
         node.blockchains.add(blockchain)
         return node
@@ -132,6 +136,21 @@ class NodeManager(models.Manager):
                 blockchain.new_block,
                 key=lambda x:x['tx_number']
             )
+            node.the_largest_transaction_for_inputs = max(
+                node.the_largest_transaction_for_inputs,
+                blockchain.new_block_the_largest_transaction_for_inputs,
+                key=lambda x:x['number_of_inputs']
+            )
+            node.the_largest_transaction_for_outputs = max(
+                node.the_largest_transaction_for_outputs,
+                blockchain.new_block_the_largest_transaction_for_outputs,
+                key=lambda x:x['number_of_outputs']
+            )
+            node.the_most_expensive_transaction = max(
+                node.the_most_expensive_transaction,
+                blockchain.new_block_the_most_expensive_transaction,
+                key=lambda x:x['price']
+            )
             node.save()
             node.blockchains.add(blockchain)
 
@@ -175,7 +194,22 @@ class NodeManager(models.Manager):
                 root.the_least_number_of_transactions, 
                 node.the_least_number_of_transactions, 
                 key=lambda x:x['tx_number']
-            )
+            ),
+            the_largest_transaction_for_inputs = max(
+                root.the_largest_transaction_for_inputs,
+                node.the_largest_transaction_for_inputs,
+                key=lambda x:x['number_of_inputs']
+            ),
+            the_largest_transaction_for_outputs = max(
+                root.the_largest_transaction_for_outputs,
+                node.the_largest_transaction_for_outputs,
+                key=lambda x:x['number_of_outputs']
+            ),
+            the_most_expensive_transaction = max(
+                root.the_most_expensive_transaction,
+                node.the_most_expensive_transaction,
+                key=lambda x:x['price']
+            ),
         )
 
         new_root.blockchains.set(root.blockchains.all())
@@ -203,15 +237,61 @@ class NodeManager(models.Manager):
             node = self._update_tree(blockchain, root)
         return node
     
+    @staticmethod
+    def _update_nodes_attributes(attributes, node):
+        attributes['price'] += node.price
+        attributes['the_most_expensive_block']=max(
+            attributes['the_most_expensive_block'], 
+            node.the_most_expensive_block, 
+            key=lambda x:x['price']
+        )
+        attributes['the_cheapest_block']=min(
+            attributes['the_cheapest_block'], 
+            node.the_cheapest_block, 
+            key=lambda x:x['price']
+        )
+        attributes['the_largest_number_of_transactions']=max(
+            attributes['the_largest_number_of_transactions'], 
+            node.the_largest_number_of_transactions, 
+            key=lambda x:x['tx_number']
+        )
+        attributes['the_least_number_of_transactions']=min(
+            attributes['the_least_number_of_transactions'], 
+            node.the_least_number_of_transactions, 
+            key=lambda x:x['tx_number']
+        )
+        attributes['the_largest_transaction_for_inputs'] = max(
+            attributes['the_largest_transaction_for_inputs'],
+            node.the_largest_transaction_for_inputs,
+            key=lambda x:x['number_of_inputs']
+        )
+        attributes['the_largest_transaction_for_outputs'] = max(
+            attributes['the_largest_transaction_for_outputs'],
+            node.the_largest_transaction_for_outputs,
+            key=lambda x:x['number_of_outputs']
+        )
+        attributes['the_most_expensive_transaction'] = max(
+            attributes['the_most_expensive_transaction'],
+            node.the_most_expensive_transaction,
+            key=lambda x:x['price']
+        )
+
     def search_segment(self, time_start, time_end):
-        price = 0
-        the_most_expensive_block, the_cheapest_block = {'price': 0}, {'price': 210000000000000}
-        the_largest_number_of_transactions, the_least_number_of_transactions = {'tx_number': 0}, {'tx_number': 100000}
+        attributes = {
+            'price': 0,
+            'the_most_expensive_block': {'price': 0},
+            'the_cheapest_block': {'price': 210000000000000},
+            'the_largest_number_of_transactions': {'tx_number': 0},
+            'the_least_number_of_transactions': {'tx_number': 100000},
+            'the_largest_transaction_for_inputs': {'number_of_inputs': 0},
+            'the_largest_transaction_for_outputs': {'number_of_outputs': 0},
+            'the_most_expensive_transaction': {'price': 0},
+        }
 
         visited = set()
         node = self._get_root()
         visited.add(node)
-        while not (time_start == node.time_start and node.time_end is not None and node.time_end <= time_end ): 
+        while not (time_start == node.time_start and node.time_end is not None and node.time_end <= time_end): 
             left = node.left
             right = node.right
             if left is None and right is None:
@@ -222,56 +302,15 @@ class NodeManager(models.Manager):
                 node = right
             else:
                 if right.time_end is not None and right.time_end <= time_end:
-                    price+=right.price
-                    the_most_expensive_block=max(
-                        the_most_expensive_block, 
-                        right.the_most_expensive_block, 
-                        key=lambda x:x['price']
-                    )
-                    the_cheapest_block=min(
-                        the_cheapest_block, 
-                        right.the_cheapest_block, 
-                        key=lambda x:x['price']
-                    )
-                    the_largest_number_of_transactions=max(
-                        the_largest_number_of_transactions, 
-                        right.the_largest_number_of_transactions, 
-                        key=lambda x:x['tx_number']
-                    )
-                    the_least_number_of_transactions=min(
-                        the_least_number_of_transactions, 
-                        right.the_least_number_of_transactions, 
-                        key=lambda x:x['tx_number']
-                    )
+                    self._update_nodes_attributes(attributes, right)
                 visited.add(left)
                 node = left
-        price += node.price
     
         start_blockchain_model = node.blockchains.get(time_start=node.time_start)
-        start_blockchain_dict = start_blockchain_model.__dict__
-        start_blockchain_dict.pop('_state')
-        start_blockchain = start_blockchain_dict
+        start_blockchain = start_blockchain_model.__dict__
+        start_blockchain.pop('_state')
 
-        the_most_expensive_block=max(
-            the_most_expensive_block, 
-            node.the_most_expensive_block, 
-            key=lambda x:x['price']
-        )
-        the_cheapest_block=min(
-            the_cheapest_block, 
-            node.the_cheapest_block, 
-            key=lambda x:x['price']
-        )
-        the_largest_number_of_transactions=max(
-            the_largest_number_of_transactions, 
-            node.the_largest_number_of_transactions, 
-            key=lambda x:x['tx_number']
-        )
-        the_least_number_of_transactions=min(
-            the_least_number_of_transactions, 
-            node.the_least_number_of_transactions, 
-            key=lambda x:x['tx_number']
-        )
+        self._update_nodes_attributes(attributes, node)
 
         node = self._get_root()
         while time_end != node.time_end:
@@ -281,67 +320,22 @@ class NodeManager(models.Manager):
                 break
             if time_end > left.time_end or (time_end == left.time_end and time_start == time_end):
                 if left not in visited and left.time_start >= time_start:
-                    price += left.price
-                    the_most_expensive_block=max(
-                        the_most_expensive_block, 
-                        left.the_most_expensive_block, 
-                        key=lambda x:x['price']
-                    )
-                    the_cheapest_block=min(
-                        the_cheapest_block, 
-                        left.the_cheapest_block, 
-                        key=lambda x:x['price']
-                    )
-                    the_largest_number_of_transactions=max(
-                        the_largest_number_of_transactions, 
-                        left.the_largest_number_of_transactions, 
-                        key=lambda x:x['tx_number']
-                    )
-                    the_least_number_of_transactions=min(
-                        the_least_number_of_transactions, 
-                        left.the_most_expensive_block, 
-                        key=lambda x:x['tx_number']
-                    )
+                    self._update_nodes_attributes(attributes, left)
                 node = right
             else:
                 node = left
     
         end_blockchain_model = node.blockchains.get(time_start=node.blockchains.aggregate(Max('time_start'))['time_start__max'])
-        end_blockchain_dict = end_blockchain_model.__dict__
-        end_blockchain_dict.pop('_state')
-        end_blockchain = end_blockchain_dict
+        end_blockchain = end_blockchain_model.__dict__
+        end_blockchain.pop('_state')
 
         if node not in visited:
-            price += node.price
-            the_most_expensive_block=max(
-                the_most_expensive_block, 
-                node.the_most_expensive_block, 
-                key=lambda x:x['price']
-            )
-            the_cheapest_block=min(
-                the_cheapest_block, 
-                node.the_cheapest_block, 
-                key=lambda x:x['price']
-            )
-            the_largest_number_of_transactions=max(
-                the_largest_number_of_transactions, 
-                node.the_largest_number_of_transactions, 
-                key=lambda x:x['tx_number']
-            )
-            the_least_number_of_transactions=min(
-                the_least_number_of_transactions, 
-                node.the_most_expensive_block, 
-                key=lambda x:x['tx_number']
-            )
+            self._update_nodes_attributes(attributes, node)
         return {
                     "start_blockchain": start_blockchain,
-                    "price": price,
-                    "the_most_expensive_block": the_most_expensive_block,
-                    "the_cheapest_block": the_cheapest_block,
-                    "the_largest_number_of_transactions": the_largest_number_of_transactions,
-                    "the_least_number_of_transactions": the_least_number_of_transactions,
-                    "end_blockchain": end_blockchain
-                }
+                    **attributes,
+                    "end_blockchain": end_blockchain,
+               }
 
 
 class SegmentNode(models.Model):
@@ -356,6 +350,9 @@ class SegmentNode(models.Model):
     the_cheapest_block = models.JSONField()
     the_largest_number_of_transactions = models.JSONField() 
     the_least_number_of_transactions = models.JSONField()
+    the_largest_transaction_for_inputs = models.JSONField()
+    the_largest_transaction_for_outputs = models.JSONField()
+    the_most_expensive_transaction = models.JSONField()
 
     blockchains = models.ManyToManyField('Blockchain')
 

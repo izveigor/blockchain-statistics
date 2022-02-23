@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
-from update.api import BlockData, GetLatestBlockHeight
+from update.api import get_block_api, get_latest_block_height
 from status.models import Block
 
 
@@ -18,7 +18,7 @@ class Command(BaseCommand):
                 latest_block_height = Block.objects.last().height
                 latest_block_height -= 1
             else:
-                latest_block_height = GetLatestBlockHeight()
+                latest_block_height = get_latest_block_height()
 
             latest_block_height = latest_block_height + 1 - number_of_blocks
 
@@ -28,7 +28,7 @@ class Command(BaseCommand):
             self.stdout.write("Waiting time: %d" % (number_of_blocks * 10))
 
             while number_of_blocks > 0:
-                BlockData(latest_block_height)
+                get_block_api(latest_block_height)
                 latest_block_height += 1
                 number_of_blocks -= 1
                 if number_of_blocks > 0:

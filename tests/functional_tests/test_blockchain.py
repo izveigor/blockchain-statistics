@@ -1,30 +1,26 @@
 from .base import FunctionalTest
-from tests.helpers import JsonData, check_model_fields, get_data_for_blockchain, empty_function, ATTRIBUTES_OF_BLOCKCHAIN
+from tests.helpers import JsonData, ATTRIBUTES_OF_BLOCKCHAIN
 from status.models import Blockchain
-from unittest.mock import patch
-from update.blockchain import BlockchainUpdate
-from unittest.mock import patch
+from blockchain.send import send_data
 
 
 class TestBlockchain(FunctionalTest):
     '''Functional test of blockchain
     '''
     def _check_blockchain(self, get_browser_before_blockchain_update=False):
-        blockchain_data = JsonData.first_blockchain
-        first_block_result = JsonData.first_block_result
-        first_block_result['time'] = blockchain_data['time_start']
-
-        data_for_blockchain_model = get_data_for_blockchain(first_block_result)
+        blockchain_data = JsonData.third_blockchain
+        block_data = JsonData.first_block_result
 
         if get_browser_before_blockchain_update:
             self.browser.get(self.live_server_url)
-            BlockchainUpdate(**data_for_blockchain_model)
+            Blockchain.objects.create(**blockchain_data)
+            send_data(block_data, blockchain_data)
         else:
-            BlockchainUpdate(**data_for_blockchain_model)
+            Blockchain.objects.create(**blockchain_data)
             self.browser.get(self.live_server_url)
         
         attributes_string = ATTRIBUTES_OF_BLOCKCHAIN[:4]
-        attributes_objects = ATTRIBUTES_OF_BLOCKCHAIN[5:]
+        attributes_objects = ATTRIBUTES_OF_BLOCKCHAIN[4:]
 
         blockchain = Blockchain.objects.all()[0]
 
@@ -52,7 +48,6 @@ class TestBlockchain(FunctionalTest):
             "none"
         )
     
-    @patch("update.blockchain.BlockchainUpdate._send_message", empty_function)
     def test_blockchain(self):
         self._check_blockchain()
     

@@ -8,8 +8,9 @@ class SegmentTreeTest(UnitTest):
     '''Unit test of segment tree (models.SegmentNode)
     '''
     _attributes = ('price', 'the_most_expensive_block',
-        'the_cheapest_block', 'the_largest_number_of_transactions',
-        'the_least_number_of_transactions')
+                   'the_cheapest_block', 'the_largest_number_of_transactions',
+                   'the_least_number_of_transactions', 'the_largest_transaction_for_inputs',
+                   'the_largest_transaction_for_outputs', 'the_most_expensive_transaction')
     _node_ids = [1] + [i for i in range(2, 16, 2)]
 
     def _create_test_array(self, number):
@@ -26,8 +27,8 @@ class SegmentTreeTest(UnitTest):
             for attr in self._attributes:
                 start_array[attr].append(node_data[attr])
 
-        for attr, function, field in zip(self._attributes, (sum, max, min, max, min), 
-                                         (None, 'price', 'price', 'tx_number', 'tx_number')):
+        for attr, function, field in zip(self._attributes, (sum, max, min, max, min, max, max, max), 
+                                         (None, 'price', 'price', 'tx_number', 'tx_number', 'number_of_inputs', 'number_of_outputs', 'price')):
             for i in range(number):
                 p = []
                 for j in range(i, number + 1):
@@ -43,7 +44,6 @@ class SegmentTreeTest(UnitTest):
         def delete_state(blockchain_dict):
             blockchain_dict.pop('_state')
             return blockchain_dict
-    
         return {
             'start_blockchain': [[delete_state(Blockchain.objects.get(time_start=i).__dict__) 
                                  for j in range(number + 2 - i)] for i in range(1, number + 1)],
@@ -53,11 +53,11 @@ class SegmentTreeTest(UnitTest):
                                for j in range(i, number + 1)] for i in range(1, number + 1)]
         }
         
-
     def test_create_nodes(self):
         segment_tree = JsonData.segment_tree
         for time, (nodes, node_id) in enumerate(zip(segment_tree.values(), self._node_ids), start=1):
-            create_node(time, nodes['body'][str(node_id)]['the_most_expensive_block'])
+            data_for_testing = nodes['body'][str(node_id)]
+            create_node(time, data_for_testing['the_most_expensive_block'], data_for_testing['the_largest_transaction_for_inputs'])
             self.assertEqual(nodes['root'], SegmentNode.objects._get_root().id)
             
             for node_id, blockchain_time_starts in nodes['blockchains'].items():
@@ -72,13 +72,13 @@ class SegmentTreeTest(UnitTest):
             
             for node_id, node_data in nodes['body'].items():
                 check_model_fields(self, SegmentNode.objects.get(id=node_id), node_data, 'id')
-
+    
     def test_search(self):
         segment_tree = JsonData.segment_tree
         attributes = ['start_blockchain'] + list(self._attributes) + ['end_blockchain']
         for time, (nodes, node_id) in enumerate(zip(segment_tree.values(), self._node_ids), start=1):
-    
-            create_node(time, nodes['body'][str(node_id)]['the_most_expensive_block'])
+            data_for_testing = nodes['body'][str(node_id)]
+            create_node(time, data_for_testing['the_most_expensive_block'], data_for_testing['the_largest_transaction_for_inputs'])
             test_array = self._create_test_array(time)
             for i in range(1, time+1):
                 for j in range(i, time+1):

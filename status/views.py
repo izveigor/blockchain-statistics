@@ -1,11 +1,11 @@
 from django.views.generic import ListView
 from .models import Block, Blockchain, SegmentNode
 from .forms import TimelineBlockchainForm
-from django.http import JsonResponse, HttpResponseRedirect
+from django.http import JsonResponse
 from blockchain.helpers import json_decoder
 from blockchain.constants import NUMBER_OF_BLOCKS_ON_A_PAGE
 from django.shortcuts import render
-from django.urls import reverse
+from django.contrib import messages
 
 
 class BlockListView(ListView):
@@ -17,6 +17,7 @@ class BlockListView(ListView):
         context = super().get_context_data(**kwargs)
         context['blockchain'] = Blockchain.objects.first()
         context['form'] = TimelineBlockchainForm()
+
         return context
 
 
@@ -32,8 +33,8 @@ def timeline_view(request):
             return JsonResponse({'search_result': search_result})
         else:
             error = form.errors['__all__'][0]
-            return JsonResponse({'errors': error})
-    return HttpResponseRedirect(reverse("main"))
+            messages.error(request, error)
+    return JsonResponse({}, status=400)
 
 
 def about(request):

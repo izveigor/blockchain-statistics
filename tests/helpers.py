@@ -1,10 +1,37 @@
 from blockchain.helpers import json_decoder
-from update.api import _TransactionAPI
-from status.models import Block, Transaction, Blockchain, SegmentNode
+from status.models import Block, Blockchain, SegmentNode
 from django.db.models import Max
 import json
 import string
 import random
+
+
+ATTRIBUTES_OF_BLOCK = (
+    "height",
+    "block_index",
+    "hash",
+    "time",
+)
+
+
+ATTRIBUTES_OF_BLOCKCHAIN = (
+    "number_of_satoshi",
+    "number_of_blocks",
+    "number_of_transactions",
+    "time_start",
+    "new_block",
+    "new_block_the_largest_transaction_for_inputs",
+    "new_block_the_largest_transaction_for_outputs",
+    "new_block_the_most_expensive_transaction",
+    "the_most_expensive_block",
+    "the_cheapest_block",
+    "the_largest_number_of_transactions",
+    "the_least_number_of_transactions",
+    "the_largest_transaction_for_inputs",
+    "the_largest_transaction_for_outputs",
+    "the_most_expensive_transaction",
+)
+
 
 class _JsonData:
     '''Testing class of getting data from "data.json"
@@ -29,7 +56,6 @@ class _JsonData:
 
 
 JsonData = _JsonData()
-TransactionData = _TransactionAPI()
 
 
 def check_model_fields(self, model, data, *args):
@@ -83,46 +109,21 @@ def create_blocks(number):
         Block.objects.create(**block_data)
 
 
-def create_node(time, block):
+def create_node(time, block, transaction):
     '''Creates nodes for testing'''
     blockchain_data = JsonData.first_blockchain
     blockchain_data['time_start'] = time
     blockchain_data['new_block'] = block
+
+    blockchain_data['new_block_the_largest_transaction_for_inputs'] = transaction
+    blockchain_data['new_block_the_largest_transaction_for_outputs'] = transaction
+    blockchain_data['new_block_the_most_expensive_transaction'] = transaction
+
     blockchain = Blockchain.objects.create(**blockchain_data)
     return  {
             "node": SegmentNode.objects.create_node(blockchain=blockchain),
             "blockchain": blockchain
             }
 
-
-def get_data_for_blockchain(block_data):
-    '''Get data for testing blockchain'''
-    tx_list = block_data.pop('tx')
-    block = Block.objects.create(**block_data)
-
-    for tx in tx_list:
-        tx.update({'block_index': block})
-    
-    Transaction.objects.bulk_create([Transaction(**tx) for tx in tx_list])
-
-    return {"block": block, "transactions": Transaction.objects.filter(block_index=block)}
-
-
 def empty_function(*args, **kwargs):
     pass
-
-
-ATTRIBUTES_OF_BLOCKCHAIN = (
-    "number_of_satoshi",
-    "number_of_blocks",
-    "number_of_transactions",
-    "time_start",
-    "new_block",
-    "the_most_expensive_block",
-    "the_cheapest_block",
-    "the_largest_number_of_transactions",
-    "the_least_number_of_transactions",
-    "the_largest_transactions_for_inputs",
-    "the_largest_transactions_for_outputs",
-    "the_most_expensive_transactions"
-)

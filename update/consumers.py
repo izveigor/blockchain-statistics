@@ -7,20 +7,12 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 class BlockConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         await self.channel_layer.group_add(
-            'blocks',
-            self.channel_name,
-        )
-        await self.channel_layer.group_add(
             'blockchain',
             self.channel_name,
         )
         await self.accept()
 
     async def disconnect(self, close_code):
-        await self.channel_layer.group_discard(
-            'blocks',
-            self.channel_name,
-        )
         await self.channel_layer.group_discard(
             'blockchain',
             self.channel_name,

@@ -1,6 +1,6 @@
 from .base import UnitTest
 from tests.helpers import JsonData
-from status.models import Block, Transaction, Blockchain
+from status.models import Block, Blockchain, Transaction
 from tests.helpers import check_model_fields
 
 
@@ -21,18 +21,6 @@ class ModelsTest(UnitTest):
             [first_block, second_block]
         )
 
-    def test_transaction(self):
-        block_data = JsonData.latest_block
-        block_data.pop('txIndexes')
-        block = Block.objects.create(**block_data)
-
-        transaction_data = JsonData.transaction_result
-        block_index = transaction_data.pop('block_index')
-
-        transaction = Transaction.objects.create(block_index=block, **transaction_data)
-        transaction_data.update({'block_index': block_index})
-        check_model_fields(self, transaction, transaction_data)
-
     def test_blockchain(self):
         first_blockchain_data = JsonData.first_blockchain
         first_blockchain = Blockchain.objects.create(**first_blockchain_data)
@@ -45,4 +33,17 @@ class ModelsTest(UnitTest):
         self.assertEqual(
             list(Blockchain.objects.all()),
             [second_blockchain, first_blockchain]
+        )
+    
+    def test_transaction(self):
+        second_block = JsonData.second_block
+        first_tx_index = second_block['tx'][0]['tx_index']
+        second_tx_index = second_block['tx'][1]['tx_index']
+
+        first_transaction = Transaction.objects.create(tx_index=first_tx_index)
+        second_transaction = Transaction.objects.create(tx_index=second_tx_index)
+
+        self.assertEqual(
+            list(Transaction.objects.all()),
+            [second_transaction, first_transaction]
         )

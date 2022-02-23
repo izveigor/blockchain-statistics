@@ -17,7 +17,7 @@ class TimelineBlockchainForm(forms.Form):
         cleaned_data = self.cleaned_data
         for field in ('date_start', 'time_start', 'date_end', 'time_end'):
             if cleaned_data.get(field) is None:
-                raise ValidationError('Field "{}" is empty! Please reload the page!'.format(field))
+                raise ValidationError('Field "{}" is empty!'.format(field))
 
         start = int(time.mktime(
             datetime.strptime(
@@ -33,13 +33,13 @@ class TimelineBlockchainForm(forms.Form):
         ))
 
         if start > end:
-            raise ValidationError("Start time greater than end time! Please reload the page!")
+            raise ValidationError("Start time greater than end time!")
 
         if SegmentNode.objects.first().time_start > end:
-            raise ValidationError("Server doesn't have data in this period! Please reload the page!")
+            raise ValidationError("Server doesn't have data in this period!")
         
         if SegmentNode.objects.last().time_start < start:
-            raise ValidationError("No one element doesn't falls within this period! Please reload the page!")
+            raise ValidationError("No one element doesn't falls within this period!")
     
         self.cleaned_data.clear()
         self.cleaned_data.update({'start': start, 'end': end})

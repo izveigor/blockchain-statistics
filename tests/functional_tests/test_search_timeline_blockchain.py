@@ -1,9 +1,7 @@
 from .base import FunctionalTest
-from selenium.webdriver.common.keys import Keys
 from tests.helpers import JsonData, create_node, ATTRIBUTES_OF_BLOCKCHAIN
-from update.blockchain import BlockchainUpdate
-from unittest.mock import patch
 from status.models import SegmentNode
+from blockchain.send import send_data
 
 
 class TimelineTest(FunctionalTest):
@@ -25,7 +23,8 @@ class TimelineTest(FunctionalTest):
         )
 
         segment_tree = JsonData.segment_tree.pop("first_node")
-        create_node(1, segment_tree['body']['1']['the_most_expensive_block'])
+        data_for_testing = segment_tree['body']['1']
+        create_node(1, data_for_testing['the_most_expensive_block'], data_for_testing['the_largest_transaction_for_inputs'])
 
         self.browser.get(self.live_server_url)
         self.assertEqual(
@@ -37,19 +36,17 @@ class TimelineTest(FunctionalTest):
             self._get_element_by_id("timeline_blockchain_body").value_of_css_property("display"),
             "none"
         )
-    
-    def _mock_blockchain(self, time, segment_tree_data):
-        first_blockchain = JsonData.first_blockchain
-        create_node(time, segment_tree_data)
-        self._send_message(first_blockchain)
 
-    @patch('update.blockchain._BlockchainUpdate.__call__', _mock_blockchain)
     def test_form_after_send_blockchain(self):
         segment_tree = JsonData.segment_tree.pop('second_node')
         self.browser.get(self.live_server_url)
+        blockchain_data = JsonData.first_blockchain
+        block_data = JsonData.first_block
 
         for time in range(1, 2):
-            BlockchainUpdate(time, segment_tree['body'][str(time)]['the_most_expensive_block'])
+            data_for_testing = segment_tree['body'][str(time)]
+            create_node(time, data_for_testing['the_most_expensive_block'], data_for_testing['the_largest_transaction_for_inputs'])
+            send_data(block_data, blockchain_data)
 
         self._test_form()
 
@@ -57,7 +54,8 @@ class TimelineTest(FunctionalTest):
     def test_form_after_add_nodes(self):
         segment_tree = JsonData.segment_tree.pop('second_node')
         for time in range(1, 2):
-            create_node(time, segment_tree['body'][str(time)]['the_most_expensive_block'])
+            data_for_testing = segment_tree['body'][str(time)]
+            create_node(time, data_for_testing['the_most_expensive_block'], data_for_testing['the_largest_transaction_for_inputs'])
 
         self.browser.get(self.live_server_url)
         self._test_form()
@@ -76,12 +74,9 @@ class TimelineTest(FunctionalTest):
             "block"
         )
 
-        search_blockchain_objects = (
-            'the_most_expensive_block',
-            'the_cheapest_block',
-            'the_largest_number_of_transactions',
-            'the_least_number_of_transactions'
-        )
+        attributes_string = ATTRIBUTES_OF_BLOCKCHAIN[:4]
+        attributes_objects = ATTRIBUTES_OF_BLOCKCHAIN[4:]
+        search_attributes_objects = ATTRIBUTES_OF_BLOCKCHAIN[8:]
 
         search_result = SegmentNode.objects.search_segment(1, 4)
         start_blockchain = search_result.pop('start_blockchain')
@@ -92,16 +87,13 @@ class TimelineTest(FunctionalTest):
             str(search_result['price'])
         )
 
-        for object_model in search_blockchain_objects:
+        for object_model in search_attributes_objects:
             field = search_result[object_model]
             for key in field.keys():
                 self.assertEqual(
                     str(field[key]),
                     self._get_element_by_id('timeline_' + key + '_' + object_model).text
                 )
-        
-        attributes_string = ATTRIBUTES_OF_BLOCKCHAIN[:4]
-        attributes_objects = ATTRIBUTES_OF_BLOCKCHAIN[5:]
 
         for field in attributes_string:
             self.assertEqual(
@@ -109,7 +101,7 @@ class TimelineTest(FunctionalTest):
                 str(start_blockchain[field]) + ' -> ' + str(end_blockchain[field])
             )
 
-        for object_model in search_blockchain_objects:
+        for object_model in attributes_objects:
             field = start_blockchain[object_model]
             for key in field.keys():
                 self.assertEqual(

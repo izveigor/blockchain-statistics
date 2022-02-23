@@ -22,14 +22,18 @@
                                 <thead>
                                     <tr class="text-center">
                                         <th>Height: </th>
+                                        <th>Index: </th>
                                         <th>Hash: </th>
+                                        <th>Time: </th>
                                     </tr>
                                 </thead>
                                 <tbody id="body_block_live_update">
                                     {% for block in page_obj %}
                                         <tr>
                                             <td>{{ block.height }}</td>
+                                            <td>{{ block.block_index }}</td>
                                             <td>{{ block.hash }}</td>
+                                            <td>{{ block.time }}</td>
                                         </tr>
                                     {% endfor %}
                                 </tbody>
@@ -57,7 +61,7 @@
             </div>
             <div class="card" style="margin-bottom: 2em;">
                 <h4 class="card-header text-center">
-                    Blochchain timeline
+                    Blockchain timeline:
                 </h4>
                 {% if not blockchain %}
                     <span id="empty_search_blockchain" style="margin-top: 1em;" class="text-center">
@@ -79,9 +83,13 @@
                                     <button type="button" id="search_button" class="btn btn-primary">Search</button>
                                 </div>
                             </div>
-                            <div class="text-center">
-                                <div style="color: red" id="error_message">{{ error }}</div>
-                            </div>
+                            {% if messages %}
+                            <ul class="messages text-center ">
+                                {% for message in messages %}
+                                    <span class="text-danger">{{ message }}</span>
+                                {% endfor %}
+                            </ul>
+                            {% endif %}
                     </form>
                     <div id="timeline_blockchain_body">
                     <p class="lead text-center">Blockchain timeline:</p>
@@ -206,6 +214,105 @@
                                 </tr>
                             </table>
                         </tr>
+                        <tr>
+                            <span>The largest transactions for inputs:</span>
+                            <table id="timeline_the_largest_transaction_for_inputs" class="table table-striped table-bordered">
+                                <tr>
+                                    <td>Price:</td>
+                                    <td id="timeline_price_the_largest_transaction_for_inputs"></td>
+                                </tr>
+                                <tr>
+                                    <td>Number of inputs:</td>
+                                    <td id="timeline_number_of_inputs_the_largest_transaction_for_inputs"></td>
+                                </tr>
+                                <tr>
+                                    <td>Number of outputs:</td>
+                                    <td id="timeline_number_of_outputs_the_largest_transaction_for_inputs"></td>
+                                </tr>
+                                <tr>
+                                    <td>Hash:</td>
+                                    <td id="timeline_hash_the_largest_transaction_for_inputs"></td>
+                                </tr>
+                                <tr>
+                                    <td>Transaction index:</td>
+                                    <td id="timeline_tx_index_the_largest_transaction_for_inputs"></td>
+                                </tr>
+                                <tr>
+                                    <td>Time:</td>
+                                    <td id="timeline_time_the_largest_transaction_for_inputs"></td>
+                                </tr>
+                                <tr>
+                                    <td>Block index:</td>
+                                    <td id="timeline_block_index_the_largest_transaction_for_inputs"></td>
+                                </tr>
+                            </table>
+                        </tr>
+                        <tr>
+                            <span>The largest transactions for outputs:</span>
+                            <table id="timeline_the_largest_transaction_for_outputs" class="table table-striped table-bordered">
+                                <tr>
+                                    <td>Price:</td>
+                                    <td id="timeline_price_the_largest_transaction_for_outputs"></td>
+                                </tr>
+                                <tr>
+                                    <td>Number of inputs:</td>
+                                    <td id="timeline_number_of_inputs_the_largest_transaction_for_outputs"></td>
+                                </tr>
+                                <tr>
+                                    <td>Number of outputs:</td>
+                                    <td id="timeline_number_of_outputs_the_largest_transaction_for_outputs"></td>
+                                </tr>
+                                <tr>
+                                    <td>Hash:</td>
+                                    <td id="timeline_hash_the_largest_transaction_for_outputs"></td>
+                                </tr>
+                                <tr>
+                                    <td>Transaction index:</td>
+                                    <td id="timeline_tx_index_the_largest_transaction_for_outputs"></td>
+                                </tr>
+                                <tr>
+                                    <td>Time:</td>
+                                    <td id="timeline_time_the_largest_transaction_for_outputs"></td>
+                                </tr>
+                                <tr>
+                                    <td>Block index:</td>
+                                    <td id="timeline_block_index_the_largest_transaction_for_outputs"></td>
+                                </tr>
+                            </table>
+                        </tr>
+                        <tr>
+                            <span>The most expensive transactions:</span>
+                            <table id="timeline_the_most_expensive_transaction" class="table table-striped table-bordered">
+                                <tr>
+                                    <td>Price:</td>
+                                    <td id="timeline_price_the_most_expensive_transaction"></td>
+                                </tr>
+                                <tr>
+                                    <td>Number of inputs:</td>
+                                    <td id="timeline_number_of_inputs_the_most_expensive_transaction"></td>
+                                </tr>
+                                <tr>
+                                    <td>Number of outputs:</td>
+                                    <td id="timeline_number_of_outputs_the_most_expensive_transaction"></td>
+                                </tr>
+                                <tr>
+                                    <td>Hash:</td>
+                                    <td id="timeline_hash_the_most_expensive_transaction"></td>
+                                </tr>
+                                <tr>
+                                    <td>Transaction index:</td>
+                                    <td id="timeline_tx_index_the_most_expensive_transaction"></td>
+                                </tr>
+                                <tr>
+                                    <td>Time:</td>
+                                    <td id="timeline_time_the_most_expensive_transaction"></td>
+                                </tr>
+                                <tr>
+                                    <td>Block index:</td>
+                                    <td id="timeline_block_index_the_most_expensive_transaction"></td>
+                                </tr>
+                            </table>
+                        </tr>
                     </table>
                     <p class="lead text-center">Blockchain:</p>
                         <p class="lead text-center">About blockchain:</p>
@@ -227,31 +334,134 @@
                                 <td id="timeline_blockchain_time_start"></td>
                             </tr>
                         </table>
-                        <span>Last block:</span>
-                        <table id="timeline_blockchain_new_block" class="table table-striped table-bordered">
+                        <p class="lead text-center">Last block:</p>
+                        <table>
                             <tr>
-                                <td>Price:</td>
-                                <td id="timeline_blockchain_price_new_block"></td>
+                                <table id="timeline_blockchain_new_block" class="table table-striped table-bordered">
+                                    <tr>
+                                        <td>Price:</td>
+                                        <td id="timeline_blockchain_price_new_block"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Number of transactions:</td>
+                                        <td id="timeline_blockchain_tx_number_new_block"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Height:</td>
+                                        <td id="timeline_blockchain_height_new_block"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Hash:</td>
+                                        <td id="timeline_blockchain_hash_new_block"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Time:</td>
+                                        <td id="timeline_blockchain_time_new_block"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Block index:</td>
+                                        <td id="timeline_blockchain_block_index_new_block"></td>
+                                    </tr>
+                                </table>
                             </tr>
                             <tr>
-                                <td>Number of transactions:</td>
-                                <td id="timeline_blockchain_tx_number_new_block"></td>
+                                <span>The largest transactions for inputs:</span>
+                                <table id="timeline_blockchain_new_block_the_largest_transaction_for_inputs" class="table table-striped table-bordered">
+                                    <tr>
+                                        <td>Price:</td>
+                                        <td id="timeline_blockchain_price_new_block_the_largest_transaction_for_inputs"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Number of inputs:</td>
+                                        <td id="timeline_blockchain_number_of_inputs_new_block_the_largest_transaction_for_inputs"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Number of outputs:</td>
+                                        <td id="timeline_blockchain_number_of_outputs_new_block_the_largest_transaction_for_inputs"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Hash:</td>
+                                        <td id="timeline_blockchain_hash_new_block_the_largest_transaction_for_inputs"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Transaction index:</td>
+                                        <td id="timeline_blockchain_tx_index_new_block_the_largest_transaction_for_inputs"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Time:</td>
+                                        <td id="timeline_blockchain_time_new_block_the_largest_transaction_for_inputs"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Block index:</td>
+                                        <td id="timeline_blockchain_block_index_new_block_the_largest_transaction_for_inputs"></td>
+                                    </tr>
+                                </table>
                             </tr>
                             <tr>
-                                <td>Height:</td>
-                                <td id="timeline_blockchain_height_new_block"></td>
+                                <span>The largest transactions for outputs:</span>
+                                <table id="timeline_blockchain_new_block_the_largest_transaction_for_outputs" class="table table-striped table-bordered">
+                                    <tr>
+                                        <td>Price:</td>
+                                        <td id="timeline_blockchain_price_new_block_the_largest_transaction_for_outputs"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Number of inputs:</td>
+                                        <td id="timeline_blockchain_number_of_inputs_new_block_the_largest_transaction_for_outputs"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Number of outputs:</td>
+                                        <td id="timeline_blockchain_number_of_outputs_new_block_the_largest_transaction_for_outputs"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Hash:</td>
+                                        <td id="timeline_blockchain_hash_new_block_the_largest_transaction_for_outputs"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Transaction index:</td>
+                                        <td id="timeline_blockchain_tx_index_new_block_the_largest_transaction_for_outputs"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Time:</td>
+                                        <td id="timeline_blockchain_time_new_block_the_largest_transaction_for_outputs"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Block index:</td>
+                                        <td id="timeline_blockchain_block_index_new_block_the_largest_transaction_for_outputs"></td>
+                                    </tr>
+                                </table>
                             </tr>
                             <tr>
-                                <td>Hash:</td>
-                                <td id="timeline_blockchain_hash_new_block"></td>
-                            </tr>
-                            <tr>
-                                <td>Time:</td>
-                                <td id="timeline_blockchain_time_new_block"></td>
-                            </tr>
-                            <tr>
-                                <td>Block index:</td>
-                                <td id="timeline_blockchain_block_index_new_block"></td>
+                                <span>The most expensive transactions:</span>
+                                <table id="timeline_blockchain_new_block_the_most_expensive_transaction" class="table table-striped table-bordered">
+                                    <tr>
+                                        <td>Price:</td>
+                                        <td id="timeline_blockchain_price_new_block_the_most_expensive_transaction"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Number of inputs:</td>
+                                        <td id="timeline_blockchain_number_of_inputs_new_block_the_most_expensive_transaction"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Number of outputs:</td>
+                                        <td id="timeline_blockchain_number_of_outputs_new_block_the_most_expensive_transaction"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Hash:</td>
+                                        <td id="timeline_blockchain_hash_new_block_the_most_expensive_transaction"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Transaction index:</td>
+                                        <td id="timeline_blockchain_tx_index_new_block_the_most_expensive_transaction"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Time:</td>
+                                        <td id="timeline_blockchain_time_new_block_the_most_expensive_transaction"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Block index:</td>
+                                        <td id="timeline_blockchain_block_index_new_block_the_most_expensive_transaction"></td>
+                                    </tr>
+                                </table>
                             </tr>
                         </table>
                         <p class="lead text-center">About blocks:</p>
@@ -377,76 +587,100 @@
                         <table>
                             <tr>
                                 <span>The largest transactions for inputs:</span>
-                                <table id="timeline_blockchain_the_largest_transactions_for_inputs" class="table table-striped table-bordered">
+                                <table id="timeline_blockchain_the_largest_transaction_for_inputs" class="table table-striped table-bordered">
+                                    <tr>
+                                        <td>Price:</td>
+                                        <td id="timeline_blockchain_price_the_largest_transaction_for_inputs"></td>
+                                    </tr>
                                     <tr>
                                         <td>Number of inputs:</td>
-                                        <td id="timeline_blockchain_number_of_inputs_the_largest_transactions_for_inputs"></td>
+                                        <td id="timeline_blockchain_number_of_inputs_the_largest_transaction_for_inputs"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Number of outputs:</td>
+                                        <td id="timeline_blockchain_number_of_outputs_the_largest_transaction_for_inputs"></td>
                                     </tr>
                                     <tr>
                                         <td>Hash:</td>
-                                        <td id="timeline_blockchain_hash_the_largest_transactions_for_inputs"></td>
+                                        <td id="timeline_blockchain_hash_the_largest_transaction_for_inputs"></td>
                                     </tr>
                                     <tr>
                                         <td>Transaction index:</td>
-                                        <td id="timeline_blockchain_tx_index_the_largest_transactions_for_inputs"></td>
+                                        <td id="timeline_blockchain_tx_index_the_largest_transaction_for_inputs"></td>
                                     </tr>
                                     <tr>
                                         <td>Time:</td>
-                                        <td id="timeline_blockchain_time_the_largest_transactions_for_inputs"></td>
+                                        <td id="timeline_blockchain_time_the_largest_transaction_for_inputs"></td>
                                     </tr>
                                     <tr>
                                         <td>Block index:</td>
-                                        <td id="timeline_blockchain_block_index_id_the_largest_transactions_for_inputs"></td>
+                                        <td id="timeline_blockchain_block_index_the_largest_transaction_for_inputs"></td>
                                     </tr>
                                 </table>
                             </tr>
                             <tr>
                                 <span>The largest transactions for outputs:</span>
-                                <table id="timeline_blockchain_the_largest_transactions_for_outputs" class="table table-striped table-bordered">
+                                <table id="timeline_blockchain_the_largest_transaction_for_outputs" class="table table-striped table-bordered">
+                                    <tr>
+                                        <td>Price:</td>
+                                        <td id="timeline_blockchain_price_the_largest_transaction_for_outputs"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Number of inputs:</td>
+                                        <td id="timeline_blockchain_number_of_inputs_the_largest_transaction_for_outputs"></td>
+                                    </tr>
                                     <tr>
                                         <td>Number of outputs:</td>
-                                        <td id="timeline_blockchain_number_of_outputs_the_largest_transactions_for_outputs"></td>
+                                        <td id="timeline_blockchain_number_of_outputs_the_largest_transaction_for_outputs"></td>
                                     </tr>
                                     <tr>
                                         <td>Hash:</td>
-                                        <td id="timeline_blockchain_hash_the_largest_transactions_for_outputs"></td>
+                                        <td id="timeline_blockchain_hash_the_largest_transaction_for_outputs"></td>
                                     </tr>
                                     <tr>
                                         <td>Transaction index:</td>
-                                        <td id="timeline_blockchain_tx_index_the_largest_transactions_for_outputs"></td>
+                                        <td id="timeline_blockchain_tx_index_the_largest_transaction_for_outputs"></td>
                                     </tr>
                                     <tr>
                                         <td>Time:</td>
-                                        <td id="timeline_blockchain_time_the_largest_transactions_for_outputs"></td>
+                                        <td id="timeline_blockchain_time_the_largest_transaction_for_outputs"></td>
                                     </tr>
                                     <tr>
                                         <td>Block index:</td>
-                                        <td id="timeline_blockchain_block_index_id_the_largest_transactions_for_outputs"></td>
+                                        <td id="timeline_blockchain_block_index_the_largest_transaction_for_outputs"></td>
                                     </tr>
                                 </table>
                             </tr>
                             <tr>
                                 <span>The most expensive transactions:</span>
-                                <table id="timeline_blockchain_the_most_expensive_transactions" class="table table-striped table-bordered">
-                                     <tr>
+                                <table id="timeline_blockchain_the_most_expensive_transaction" class="table table-striped table-bordered">
+                                    <tr>
                                         <td>Price:</td>
-                                        <td id="timeline_blockchain_price_the_most_expensive_transactions"></td>
+                                        <td id="timeline_blockchain_price_the_most_expensive_transaction"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Number of inputs:</td>
+                                        <td id="timeline_blockchain_number_of_inputs_the_most_expensive_transaction"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Number of outputs:</td>
+                                        <td id="timeline_blockchain_number_of_outputs_the_most_expensive_transaction"></td>
                                     </tr>
                                     <tr>
                                         <td>Hash:</td>
-                                        <td id="timeline_blockchain_hash_the_most_expensive_transactions"></td>
+                                        <td id="timeline_blockchain_hash_the_most_expensive_transaction"></td>
                                     </tr>
                                     <tr>
                                         <td>Transaction index:</td>
-                                        <td id="timeline_blockchain_tx_index_the_most_expensive_transactions"></td>
+                                        <td id="timeline_blockchain_tx_index_the_most_expensive_transaction"></td>
                                     </tr>
                                     <tr>
                                         <td>Time:</td>
-                                        <td id="timeline_blockchain_time_the_most_expensive_transactions"></td>
+                                        <td id="timeline_blockchain_time_the_most_expensive_transaction"></td>
                                     </tr>
                                     <tr>
                                         <td>Block index:</td>
-                                        <td id="timeline_blockchain_block_index_id_the_most_expensive_transactions"></td>
+                                        <td id="timeline_blockchain_block_index_the_most_expensive_transaction"></td>
                                     </tr>
                                 </table>
                             </tr>
@@ -485,31 +719,134 @@
                                 <td id="time_start">{{ blockchain.time_start }}</td>
                             </tr>
                         </table>
-                        <span>Last block:</span>
-                        <table id="new_block" class="table table-striped table-bordered">
+                        <p class="lead text-center">Last block:</p>
+                        <table>
                             <tr>
-                                <td>Price:</td>
-                                <td id="price_new_block">{{ blockchain.new_block.price }}</td>
+                                <table id="new_block" class="table table-striped table-bordered">
+                                    <tr>
+                                        <td>Price:</td>
+                                        <td id="price_new_block">{{ blockchain.new_block.price }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Number of transactions:</td>
+                                        <td id="tx_number_new_block">{{ blockchain.new_block.tx_number }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Height:</td>
+                                        <td id="height_new_block">{{ blockchain.new_block.height }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Hash:</td>
+                                        <td id="hash_new_block">{{ blockchain.new_block.hash }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Time:</td>
+                                        <td id="time_new_block">{{ blockchain.new_block.time }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Block index:</td>
+                                        <td id="block_index_new_block">{{ blockchain.new_block.block_index }}</td>
+                                    </tr>
+                                </table>
                             </tr>
                             <tr>
-                                <td>Number of transactions:</td>
-                                <td id="tx_number_new_block">{{ blockchain.new_block.tx_number }}</td>
+                                <span>The largest transactions for inputs:</span>
+                                <table id="new_block_the_largest_transaction_for_inputs" class="table table-striped table-bordered">
+                                    <tr>
+                                        <td>Price:</td>
+                                        <td id="price_new_block_the_largest_transaction_for_inputs">{{ blockchain.new_block_the_largest_transaction_for_inputs.price }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Number of inputs:</td>
+                                        <td id="number_of_inputs_new_block_the_largest_transaction_for_inputs">{{ blockchain.new_block_the_largest_transaction_for_inputs.number_of_inputs }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Number of outputs:</td>
+                                        <td id="number_of_outputs_new_block_the_largest_transaction_for_inputs">{{ blockchain.new_block_the_largest_transaction_for_inputs.number_of_outputs }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Hash:</td>
+                                        <td id="hash_new_block_the_largest_transaction_for_inputs">{{ blockchain.new_block_the_largest_transaction_for_inputs.hash }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Transaction index:</td>
+                                        <td id="tx_index_new_block_the_largest_transaction_for_inputs">{{ blockchain.new_block_the_largest_transaction_for_inputs.tx_index}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Time:</td>
+                                        <td id="time_new_block_the_largest_transaction_for_inputs">{{blockchain.new_block_the_largest_transaction_for_inputs.time}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Block index:</td>
+                                        <td id="block_index_new_block_the_largest_transaction_for_inputs">{{blockchain.new_block_the_largest_transaction_for_inputs.block_index}}</td>
+                                    </tr>
+                                </table>
                             </tr>
                             <tr>
-                                <td>Height:</td>
-                                <td id="height_new_block">{{ blockchain.new_block.height }}</td>
+                                <span>The largest transactions for outputs:</span>
+                                <table id="new_block_the_largest_transaction_for_outputs" class="table table-striped table-bordered">
+                                    <tr>
+                                        <td>Price:</td>
+                                        <td id="price_new_block_the_largest_transaction_for_outputs">{{ blockchain.new_block_the_largest_transaction_for_outputs.price }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Number of inputs:</td>
+                                        <td id="number_of_inputs_new_block_the_largest_transaction_for_outputs">{{ blockchain.new_block_the_largest_transaction_for_outputs.number_of_inputs }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Number of outputs:</td>
+                                        <td id="number_of_outputs_new_block_the_largest_transaction_for_outputs">{{ blockchain.new_block_the_largest_transaction_for_outputs.number_of_outputs }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Hash:</td>
+                                        <td id="hash_new_block_the_largest_transaction_for_outputs">{{blockchain.new_block_the_largest_transaction_for_outputs.hash}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Transaction index:</td>
+                                        <td id="tx_index_new_block_the_largest_transaction_for_outputs">{{blockchain.new_block_the_largest_transaction_for_outputs.tx_index}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Time:</td>
+                                        <td id="time_new_block_the_largest_transaction_for_outputs">{{blockchain.new_block_the_largest_transaction_for_outputs.time}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Block index:</td>
+                                        <td id="block_index_new_block_the_largest_transaction_for_outputs">{{blockchain.new_block_the_largest_transaction_for_outputs.block_index}}</td>
+                                    </tr>
+                                </table>
                             </tr>
                             <tr>
-                                <td>Hash:</td>
-                                <td id="hash_new_block">{{ blockchain.new_block.hash }}</td>
-                            </tr>
-                            <tr>
-                                <td>Time:</td>
-                                <td id="time_new_block">{{ blockchain.new_block.time }}</td>
-                            </tr>
-                            <tr>
-                                <td>Block index:</td>
-                                <td id="block_index_new_block">{{ blockchain.new_block.block_index }}</td>
+                                <span>The most expensive transactions:</span>
+                                <table id="new_block_the_most_expensive_transaction" class="table table-striped table-bordered">
+                                    <tr>
+                                        <td>Price:</td>
+                                        <td id="price_new_block_the_most_expensive_transaction">{{ blockchain.new_block_the_most_expensive_transaction.price }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Number of inputs:</td>
+                                        <td id="number_of_inputs_new_block_the_most_expensive_transaction">{{ blockchain.new_block_the_most_expensive_transaction.number_of_inputs }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Number of outputs:</td>
+                                        <td id="number_of_outputs_new_block_the_most_expensive_transaction">{{ blockchain.new_block_the_most_expensive_transaction.number_of_outputs }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Hash:</td>
+                                        <td id="hash_new_block_the_most_expensive_transaction">{{blockchain.new_block_the_most_expensive_transaction.hash}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Transaction index:</td>
+                                        <td id="tx_index_new_block_the_most_expensive_transaction">{{blockchain.new_block_the_most_expensive_transaction.tx_index}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Time:</td>
+                                        <td id="time_new_block_the_most_expensive_transaction">{{blockchain.new_block_the_most_expensive_transaction.time}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Block index:</td>
+                                        <td id="block_index_new_block_the_most_expensive_transaction">{{blockchain.new_block_the_most_expensive_transaction.block_index}}</td>
+                                    </tr>
+                                </table>
                             </tr>
                         </table>
                         <p class="lead text-center">About blocks:</p>
@@ -523,7 +860,7 @@
                                     </tr>
                                     <tr>
                                         <td>Number of transactions:</td>
-                                        <td id="tx_number_the_most_expensive_block">{{ blockchain.new_block.tx_number }}</td>
+                                        <td id="tx_number_the_most_expensive_block">{{ blockchain.the_most_expensive_block.tx_number }}</td>
                                     </tr>
                                     <tr>
                                         <td>Height:</td>
@@ -552,7 +889,7 @@
                                     </tr>
                                     <tr>
                                         <td>Number of transactions:</td>
-                                        <td id="tx_number_the_cheapest_block">{{ blockchain.new_block.tx_number }}</td>
+                                        <td id="tx_number_the_cheapest_block">{{ blockchain.the_cheapest_block.tx_number }}</td>
                                     </tr>
                                     <tr>
                                         <td>Height:</td>
@@ -577,7 +914,7 @@
                                 <table id="the_largest_number_of_transactions" class="table table-striped table-bordered">
                                     <tr>
                                         <td>Price:</td>
-                                        <td id="price_the_largest_number_of_transactions">{{ blockchain.the_cheapest_block.price }}</td>
+                                        <td id="price_the_largest_number_of_transactions">{{ blockchain.the_largest_number_of_transactions.price }}</td>
                                     </tr>
                                     <tr>
                                         <td>Number of transactions:</td>
@@ -606,7 +943,7 @@
                                 <table id="the_least_number_of_transactions" class="table table-striped table-bordered">
                                     <tr>
                                         <td>Price:</td>
-                                        <td id="price_the_least_number_of_transactions">{{ blockchain.the_cheapest_block.price }}</td>
+                                        <td id="price_the_least_number_of_transactions">{{ blockchain.the_least_number_of_transactions.price }}</td>
                                     </tr>
                                     <tr>
                                         <td>Number of transactions:</td>
@@ -635,76 +972,100 @@
                         <table>
                             <tr>
                                 <span>The largest transactions for inputs:</span>
-                                <table id="the_largest_transactions_for_inputs" class="table table-striped table-bordered">
+                                <table id="the_largest_transaction_for_inputs" class="table table-striped table-bordered">
+                                    <tr>
+                                        <td>Price:</td>
+                                        <td id="price_the_largest_transaction_for_inputs">{{ blockchain.the_largest_transaction_for_inputs.price }}</td>
+                                    </tr>
                                     <tr>
                                         <td>Number of inputs:</td>
-                                        <td id="number_of_inputs_the_largest_transactions_for_inputs">{{ blockchain.the_largest_transactions_for_inputs.number_of_inputs }}</td>
+                                        <td id="number_of_inputs_the_largest_transaction_for_inputs">{{ blockchain.the_largest_transaction_for_inputs.number_of_inputs }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Number of outputs:</td>
+                                        <td id="number_of_outputs_the_largest_transaction_for_inputs">{{ blockchain.the_largest_transaction_for_inputs.number_of_outputs }}</td>
                                     </tr>
                                     <tr>
                                         <td>Hash:</td>
-                                        <td id="hash_the_largest_transactions_for_inputs">{{ blockchain.the_largest_transactions_for_inputs.hash }}</td>
+                                        <td id="hash_the_largest_transaction_for_inputs">{{ blockchain.the_largest_transaction_for_inputs.hash }}</td>
                                     </tr>
                                     <tr>
                                         <td>Transaction index:</td>
-                                        <td id="tx_index_the_largest_transactions_for_inputs">{{ blockchain.the_largest_transactions_for_inputs.tx_index }}</td>
+                                        <td id="tx_index_the_largest_transaction_for_inputs">{{ blockchain.the_largest_transaction_for_inputs.tx_index }}</td>
                                     </tr>
                                     <tr>
                                         <td>Time:</td>
-                                        <td id="time_the_largest_transactions_for_inputs">{{ blockchain.the_largest_transactions_for_inputs.time }}</td>
+                                        <td id="time_the_largest_transaction_for_inputs">{{ blockchain.the_largest_transaction_for_inputs.time }}</td>
                                     </tr>
                                     <tr>
                                         <td>Block index:</td>
-                                        <td id="block_index_id_the_largest_transactions_for_inputs">{{ blockchain.the_largest_transactions_for_inputs.block_index_id }}</td>
+                                        <td id="block_index_the_largest_transaction_for_inputs">{{ blockchain.the_largest_transaction_for_inputs.block_index }}</td>
                                     </tr>
                                 </table>
                             </tr>
                             <tr>
                                 <span>The largest transactions for outputs:</span>
-                                <table id="the_largest_transactions_for_outputs" class="table table-striped table-bordered">
+                                <table id="the_largest_transaction_for_outputs" class="table table-striped table-bordered">
+                                    <tr>
+                                        <td>Price:</td>
+                                        <td id="price_the_largest_transaction_for_outputs">{{ blockchain.the_largest_transaction_for_outputs.price }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Number of inputs:</td>
+                                        <td id="number_of_inputs_the_largest_transaction_for_outputs">{{ blockchain.the_largest_transaction_for_outputs.number_of_inputs }}</td>
+                                    </tr>
                                     <tr>
                                         <td>Number of outputs:</td>
-                                        <td id="number_of_outputs_the_largest_transactions_for_outputs">{{ blockchain.the_largest_transactions_for_outputs.number_of_outputs }}</td>
+                                        <td id="number_of_outputs_the_largest_transaction_for_outputs">{{ blockchain.the_largest_transaction_for_outputs.number_of_outputs }}</td>
                                     </tr>
                                     <tr>
                                         <td>Hash:</td>
-                                        <td id="hash_the_largest_transactions_for_outputs">{{ blockchain.the_largest_transactions_for_outputs.hash }}</td>
+                                        <td id="hash_the_largest_transaction_for_outputs">{{ blockchain.the_largest_transaction_for_outputs.hash }}</td>
                                     </tr>
                                     <tr>
                                         <td>Transaction index:</td>
-                                        <td id="tx_index_the_largest_transactions_for_outputs">{{ blockchain.the_largest_transactions_for_outputs.tx_index }}</td>
+                                        <td id="tx_index_the_largest_transaction_for_outputs">{{ blockchain.the_largest_transaction_for_outputs.tx_index }}</td>
                                     </tr>
                                     <tr>
                                         <td>Time:</td>
-                                        <td id="time_the_largest_transactions_for_outputs">{{ blockchain.the_largest_transactions_for_outputs.time }}</td>
+                                        <td id="time_the_largest_transaction_for_outputs">{{ blockchain.the_largest_transaction_for_outputs.time }}</td>
                                     </tr>
                                     <tr>
                                         <td>Block index:</td>
-                                        <td id="block_index_id_the_largest_transactions_for_outputs">{{ blockchain.the_largest_transactions_for_outputs.block_index_id }}</td>
+                                        <td id="block_index_the_largest_transaction_for_outputs">{{ blockchain.the_largest_transaction_for_outputs.block_index }}</td>
                                     </tr>
                                 </table>
                             </tr>
                             <tr>
                                 <span>The most expensive transactions:</span>
-                                <table id="the_most_expensive_transactions" class="table table-striped table-bordered">
-                                     <tr>
+                                <table id="the_most_expensive_transaction" class="table table-striped table-bordered">
+                                    <tr>
                                         <td>Price:</td>
-                                        <td id="price_the_most_expensive_transactions">{{ blockchain.the_most_expensive_transactions.price }}</td>
+                                        <td id="price_the_most_expensive_transaction">{{ blockchain.the_most_expensive_transaction.price }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Number of inputs:</td>
+                                        <td id="number_of_inputs_the_most_expensive_transaction">{{ blockchain.the_most_expensive_transaction.number_of_inputs }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Number of outputs:</td>
+                                        <td id="number_of_outputs_the_most_expensive_transaction">{{ blockchain.the_most_expensive_transaction.number_of_outputs }}</td>
                                     </tr>
                                     <tr>
                                         <td>Hash:</td>
-                                        <td id="hash_the_most_expensive_transactions">{{ blockchain.the_most_expensive_transactions.hash }}</td>
+                                        <td id="hash_the_most_expensive_transaction">{{ blockchain.the_most_expensive_transaction.hash }}</td>
                                     </tr>
                                     <tr>
                                         <td>Transaction index:</td>
-                                        <td id="tx_index_the_most_expensive_transactions">{{ blockchain.the_most_expensive_transactions.tx_index }}</td>
+                                        <td id="tx_index_the_most_expensive_transaction">{{ blockchain.the_most_expensive_transaction.tx_index }}</td>
                                     </tr>
                                     <tr>
                                         <td>Time:</td>
-                                        <td id="time_the_most_expensive_transactions">{{ blockchain.the_most_expensive_transactions.time }}</td>
+                                        <td id="time_the_most_expensive_transaction">{{ blockchain.the_most_expensive_transaction.time }}</td>
                                     </tr>
                                     <tr>
                                         <td>Block index:</td>
-                                        <td id="block_index_id_the_most_expensive_transactions">{{ blockchain.the_most_expensive_transactions.block_index_id }}</td>
+                                        <td id="block_index_the_most_expensive_transaction">{{ blockchain.the_most_expensive_transaction.block_index }}</td>
                                     </tr>
                                 </table>
                             </tr>
@@ -734,13 +1095,17 @@
                     blockchain_body.style.display = "none";
             
                     const elements_of_blockchain_strings = ['number_of_satoshi', 'number_of_blocks', 'number_of_transactions', 'time_start'], 
-                          elements_of_blockchain_objects = ['new_block', 'the_most_expensive_block', 'the_cheapest_block', 'the_largest_number_of_transactions',
-                                                            'the_least_number_of_transactions', 'the_largest_transactions_for_inputs',
-                                                            'the_largest_transactions_for_outputs', 'the_most_expensive_transactions'];
+                          elements_of_blockchain_objects = ['new_block', 'new_block_the_largest_transaction_for_inputs', 'new_block_the_largest_transaction_for_outputs', 
+                                                            'new_block_the_most_expensive_transaction', 'the_most_expensive_block', 
+                                                            'the_cheapest_block', 'the_largest_number_of_transactions',
+                                                            'the_least_number_of_transactions', 'the_largest_transaction_for_inputs',
+                                                            'the_largest_transaction_for_outputs', 'the_most_expensive_transaction'];
                     
                     const elements_of_search_timeline_blockchain_strings = ['price'],
                           elements_of_search_timeline_blockchain_objects = ['the_most_expensive_block', 'the_cheapest_block', 
-                                                                            'the_largest_number_of_transactions', 'the_least_number_of_transactions'];
+                                                                            'the_largest_number_of_transactions', 'the_least_number_of_transactions',
+                                                                            'the_largest_transaction_for_inputs', 'the_largest_transaction_for_outputs', 
+                                                                            'the_most_expensive_transaction'];
             
                     search_button.onclick = function(){
                         fetch("{% url 'search' %}", {
@@ -756,13 +1121,15 @@
                                 'time_end': document.getElementById('form_time_end').value
                             })
                         })
-                        .then(response => response.json())
+                        .then((response) => {
+                            if(response.ok) {
+                                return response.json();
+                            } else{
+                                window.location.reload();
+                            }
+                        })
                         .then((search_result) => {
-                            if (search_result.errors != null){
-                                document.getElementById("error_message").innerText = search_result.errors
-                            } else {
                             data = search_result.search_result;
-
                             timeline_blockchain_body.style.display = "block";
                             start_blockchain = data.start_blockchain;
                             end_blockchain = data.end_blockchain;
@@ -772,7 +1139,6 @@
             
                             elements_of_blockchain_strings.forEach(element => document.getElementById('timeline_blockchain_' + element).innerHTML = start_blockchain[element] + ' -> ' + end_blockchain[element]);
                             elements_of_blockchain_objects.forEach(object => Object.keys(start_blockchain[object]).forEach(element => document.getElementById('timeline_blockchain_' + element + '_' + object).innerHTML = start_blockchain[object][element] + ' -> ' + end_blockchain[object][element]));
-                            }
                         });
                     };
             
@@ -798,43 +1164,39 @@
             
                     updateSocket.onmessage = function(block) {
                         const data = JSON.parse(block.data);
-                        if(data.hash != null || data.error != null){
-                            if(empty_block_live_update != null && empty_block_live_update.style.display != 'none'){
+                        if(empty_block_live_update != null && empty_block_live_update.style.display != 'none'){
                                     empty_block_live_update.style.display = 'none';
                                     table_block_live_update.style.display = "block"
                                     page_navigation.classList.add("d-flex")
                                     page_navigation.classList.add("justify-content-center")
-                                }
+                        }
             
-                                let table = document.getElementById("body_block_live_update");
-                                let rowCount = table.rows.length;
-                                if(rowCount == 5){
-                                    let next = document.getElementById('next');
-                                    if(next.getAttribute('disabled') != null){
-                                        next.removeAttribute('disabled');
-                                        next.setAttribute('href', '?page=2')
-                                        next.insertAdjacentHTML('beforebegin', '<li class="page-item"><a class="page-link" id="next_page" href="?page=2">2</a></li>')
-                                    }
-                                    table.deleteRow(rowCount -1);
-                                }
-                            
-                            if(data.error != null){
-                                table.innerHTML = "<tr><td style='color: red;' class='text-center' colspan='2'>" + data.error + "</td></tr>" + table.innerHTML;
-                            } else {
-                                table.innerHTML = "<tr><td>" + data.height + "</td><td>" + data.hash + "</td></tr>" + table.innerHTML;
+                        let table = document.getElementById("body_block_live_update");
+                        let rowCount = table.rows.length;
+                        if(rowCount == 5){
+                            let next = document.getElementById('next');
+                            if(next.getAttribute('disabled') != null){
+                                next.removeAttribute('disabled');
+                                next.setAttribute('href', '?page=2')
+                                next.insertAdjacentHTML('beforebegin', '<li class="page-item"><a class="page-link" id="next_page" href="?page=2">2</a></li>')
                             }
+                            table.deleteRow(rowCount -1);
+                        }
+                        
+                        if(data.error != null){
+                            table.innerHTML = "<tr><td style='color: red;' class='text-center' colspan='2'>" + data.error + "</td></tr>" + table.innerHTML;
                         } else {
+                            table.innerHTML = "<tr><td>" + data.block.height + "</td><td>" + data.block.block_index + "</td><td>" + data.block.hash + "</td><td>" + data.block.time + "</td></tr>" + table.innerHTML;
                             if(empty_blockchain != null && empty_blockchain.style.display != "none"){
                                 empty_blockchain.style.display = "none";
                             }
                             if(empty_search_blockchain != null && empty_search_blockchain.style.display != "none"){
                                 empty_search_blockchain.style.display = "none";
                             }
-            
                             blockchain_body.style.display = "block";
                             form_time.style.display = "flex";
-                            elements_of_blockchain_strings.forEach(element => document.getElementById(element).innerHTML = data[element]);
-                            elements_of_blockchain_objects.forEach(object => Object.keys(data[object]).forEach(element => document.getElementById(element + '_' + object).innerHTML = data[object][element]));
+                            elements_of_blockchain_strings.forEach(element => document.getElementById(element).innerHTML = data.blockchain[element]);
+                            elements_of_blockchain_objects.forEach(object => Object.keys(data.blockchain[object]).forEach(element => document.getElementById(element + '_' + object).innerHTML = data.blockchain[object][element]));
                         }
                     };
             

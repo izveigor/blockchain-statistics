@@ -1,5 +1,5 @@
 from .base import FunctionalTest
-from update.api import BlockData
+from update.api import get_block_api
 import json
 from unittest.mock import patch
 from tests.helpers import JsonData, create_node
@@ -13,7 +13,7 @@ class ErrorTest(FunctionalTest):
         mock_get.return_value = type('', (), {"status_code": 404, "text": None})
 
         self.browser.get(self.live_server_url)
-        BlockData(1)
+        get_block_api(1)
         block_live_update = self._get_element_by_id('body_block_live_update')
         self.assertEqual(
             block_live_update.text,
@@ -27,7 +27,7 @@ class ErrorTest(FunctionalTest):
         mock_get.return_value = type('', (), {"status_code": 200, "text": json.dumps(block)})
 
         self.browser.get(self.live_server_url)
-        BlockData(1)
+        get_block_api(1)
         block_live_update = self._get_element_by_id('body_block_live_update')
         self.assertEqual(
             block_live_update.text,
@@ -40,7 +40,7 @@ class ErrorTest(FunctionalTest):
         mock_get.return_value = type('', (), {"status_code": 200, "text": block})
 
         self.browser.get(self.live_server_url)
-        BlockData(1)
+        get_block_api(1)
         block_live_update = self._get_element_by_id('body_block_live_update')
         self.assertEqual(
             block_live_update.text,
@@ -51,7 +51,8 @@ class ErrorTest(FunctionalTest):
         segment_tree = JsonData.segment_tree.pop('second_node')
 
         for i, time in enumerate((5, 7), start=1):
-            create_node(time, segment_tree['body'][str(i)]['the_most_expensive_block'])
+            data_for_testing = segment_tree['body'][str(i)]
+            create_node(time, data_for_testing['the_most_expensive_block'], data_for_testing['the_largest_transaction_for_inputs'])
         
         self.browser.get(self.live_server_url)
 
@@ -64,13 +65,14 @@ class ErrorTest(FunctionalTest):
         self._get_element_by_id('search_button').click()
 
         self.assertEqual(
-            self._get_element_by_id('error_message').text,
-            "Server doesn't have data in this period! Please reload the page!"
+            self._get_element_by_class('messages').text,
+            "Server doesn't have data in this period!"
         )
     
     def test_form_start_less_than_end(self):
         segment_tree = JsonData.segment_tree.pop('first_node')
-        create_node(1, segment_tree['body']["1"]['the_most_expensive_block'])
+        data_for_testing = segment_tree['body']["1"]
+        create_node(1, data_for_testing['the_most_expensive_block'], data_for_testing['the_largest_transaction_for_inputs'])
         
         self.browser.get(self.live_server_url)
 
@@ -85,13 +87,14 @@ class ErrorTest(FunctionalTest):
         self._get_element_by_id('search_button').click()
 
         self.assertEqual(
-            self._get_element_by_id('error_message').text,
-            "Start time greater than end time! Please reload the page!"
+            self._get_element_by_class('messages').text,
+            "Start time greater than end time!"
         )
     
     def test_form_is_empty(self):
         segment_tree = JsonData.segment_tree.pop('first_node')
-        create_node(1, segment_tree['body']["1"]['the_most_expensive_block'])
+        data_for_testing = segment_tree['body']["1"]
+        create_node(1, data_for_testing['the_most_expensive_block'], data_for_testing['the_largest_transaction_for_inputs'])
         
 
         timeline = JsonData.timeline
@@ -107,13 +110,14 @@ class ErrorTest(FunctionalTest):
             self._get_element_by_id('search_button').click()
 
             self.assertEqual(
-                self._get_element_by_id('error_message').text,
-                'Field "{}" is empty! Please reload the page!'.format(field)
+                self._get_element_by_class('messages').text,
+                'Field "{}" is empty!'.format(field)
             )
     
     def test_start_time_form_greater_than_end_time_segment_node(self):
         segment_tree = JsonData.segment_tree.pop('first_node')
-        create_node(1, segment_tree['body']["1"]['the_most_expensive_block'])
+        data_for_testing = segment_tree['body']["1"]
+        create_node(1, data_for_testing['the_most_expensive_block'], data_for_testing['the_largest_transaction_for_inputs'])
 
         self.browser.get(self.live_server_url)
         
@@ -127,6 +131,6 @@ class ErrorTest(FunctionalTest):
         self._get_element_by_id('search_button').click()
 
         self.assertEqual(
-            self._get_element_by_id('error_message').text,
-            "No one element doesn't falls within this period! Please reload the page!"
+            self._get_element_by_class('messages').text,
+            "No one element doesn't falls within this period!"
         )
