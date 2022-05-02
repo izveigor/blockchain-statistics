@@ -4,18 +4,15 @@ from status.models import Block
 
 
 class Command(BaseCommand):
-    help = "Download blocks, range of number from 1 to 10."
+    help = 'Download blocks, range of number from 1 to 10.'
 
     def add_arguments(self, parser):
-        parser.add_argument("number_of_blocks", type=int)
+        parser.add_argument('number_of_blocks', type=int)
 
     def handle(self, *args, **options):
-        number_of_blocks = options["number_of_blocks"]
+        number_of_blocks = options['number_of_blocks']
         if number_of_blocks > 10 or number_of_blocks < 1:
-            raise CommandError(
-                "Range of number of blocks must be from 1 to 10, not %d"
-                % number_of_blocks
-            )
+            raise CommandError('Range of number of blocks must be from 1 to 10, not %d' % number_of_blocks)
         else:
             if Block.objects.exists():
                 latest_block_height = Block.objects.last().height
@@ -26,7 +23,7 @@ class Command(BaseCommand):
             latest_block_height = latest_block_height + 1 - number_of_blocks
 
             if latest_block_height < 1:
-                raise CommandError("Block height must be greater than 0")
+                raise CommandError('Block height must be greater than 0')
 
             self.stdout.write("Waiting time: %d" % (number_of_blocks * 10))
 
@@ -35,12 +32,6 @@ class Command(BaseCommand):
                 latest_block_height += 1
                 number_of_blocks -= 1
                 if number_of_blocks > 0:
-                    self.stdout.write(
-                        "%d blocks remain" % number_of_blocks
-                        if number_of_blocks != 1
-                        else "1 block remains"
-                    )
-
-            self.stdout.write(
-                "Complete download %d blocks" % options["number_of_blocks"]
-            )
+                    self.stdout.write("%d blocks remain" % number_of_blocks if number_of_blocks != 1 else "1 block remains")
+            
+            self.stdout.write("Complete download %d blocks" % options['number_of_blocks'])

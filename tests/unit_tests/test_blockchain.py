@@ -6,9 +6,9 @@ from update.blockchain import blockchain_update
 
 
 class TestBlockchainUpdate(UnitTest):
-    """Unit test of BlockchainUpdate (update.blockchain.BlockchainUpdate)"""
-
-    @patch("update.blockchain.SegmentNode.objects.create_node")
+    '''Unit test of BlockchainUpdate (update.blockchain.BlockchainUpdate)'''
+    
+    @patch('update.blockchain.SegmentNode.objects.create_node')
     @patch("update.blockchain.send_data")
     def test_create(self, mock_send_message, mock_create_node):
         first_block = JsonData.first_block_result
@@ -33,5 +33,6 @@ class TestBlockchainUpdate(UnitTest):
 
         first_blockchain = Blockchain.objects.last()
         self.assertEqual(
-            list(Blockchain.objects.all()), [second_blockchain, first_blockchain]
+            list(Blockchain.objects.all()),
+            [second_blockchain, first_blockchain]
         )

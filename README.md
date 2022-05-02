@@ -80,3 +80,7 @@ To get the above data, necessary fill next data:
 
 ### About time
 Application uses UTC time standard (UT0).
+
+## Tests
+If you want to start test on Windows, you should use wsl (see https://github.com/django/channels/issues/1207).
+Also, don't forget about redis (change settings hosts and start docker redis)

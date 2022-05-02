@@ -4,7 +4,7 @@ from update.api import client
 
 
 class Command(BaseCommand):
-    help = "Start websocket"
+    help = 'Start websocket'
 
     def handle(self, *args, **options):
         asyncio.run(client())
