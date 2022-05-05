@@ -8,71 +8,94 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Block',
+            name="Block",
             fields=[
-                ('height', models.IntegerField()),
-                ('hash', models.CharField(max_length=64)),
-                ('time', models.IntegerField()),
-                ('block_index', models.IntegerField(primary_key=True, serialize=False)),
+                ("height", models.IntegerField()),
+                ("hash", models.CharField(max_length=64)),
+                ("time", models.IntegerField()),
+                ("block_index", models.IntegerField(primary_key=True, serialize=False)),
             ],
             options={
-                'ordering': ['-height'],
+                "ordering": ["-height"],
             },
         ),
         migrations.CreateModel(
-            name='Blockchain',
+            name="Blockchain",
             fields=[
-                ('number_of_satoshi', models.IntegerField()),
-                ('number_of_blocks', models.IntegerField()),
-                ('number_of_transactions', models.IntegerField()),
-                ('time_start', models.IntegerField(primary_key=True, serialize=False)),
-                ('new_block', models.JSONField()),
-                ('new_block_the_largest_transaction_for_inputs', models.JSONField()),
-                ('new_block_the_largest_transaction_for_outputs', models.JSONField()),
-                ('new_block_the_most_expensive_transaction', models.JSONField()),
-                ('the_most_expensive_block', models.JSONField()),
-                ('the_cheapest_block', models.JSONField()),
-                ('the_largest_number_of_transactions', models.JSONField()),
-                ('the_least_number_of_transactions', models.JSONField()),
-                ('the_largest_transaction_for_inputs', models.JSONField()),
-                ('the_largest_transaction_for_outputs', models.JSONField()),
-                ('the_most_expensive_transaction', models.JSONField()),
+                ("number_of_satoshi", models.IntegerField()),
+                ("number_of_blocks", models.IntegerField()),
+                ("number_of_transactions", models.IntegerField()),
+                ("time_start", models.IntegerField(primary_key=True, serialize=False)),
+                ("new_block", models.JSONField()),
+                ("new_block_the_largest_transaction_for_inputs", models.JSONField()),
+                ("new_block_the_largest_transaction_for_outputs", models.JSONField()),
+                ("new_block_the_most_expensive_transaction", models.JSONField()),
+                ("the_most_expensive_block", models.JSONField()),
+                ("the_cheapest_block", models.JSONField()),
+                ("the_largest_number_of_transactions", models.JSONField()),
+                ("the_least_number_of_transactions", models.JSONField()),
+                ("the_largest_transaction_for_inputs", models.JSONField()),
+                ("the_largest_transaction_for_outputs", models.JSONField()),
+                ("the_most_expensive_transaction", models.JSONField()),
             ],
             options={
-                'ordering': ['-time_start'],
+                "ordering": ["-time_start"],
             },
         ),
         migrations.CreateModel(
-            name='Transaction',
+            name="Transaction",
             fields=[
-                ('tx_index', models.IntegerField(primary_key=True, serialize=False)),
+                ("tx_index", models.IntegerField(primary_key=True, serialize=False)),
             ],
             options={
-                'ordering': ['-tx_index'],
+                "ordering": ["-tx_index"],
             },
         ),
         migrations.CreateModel(
-            name='SegmentNode',
+            name="SegmentNode",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('time_start', models.IntegerField()),
-                ('time_end', models.IntegerField(null=True)),
-                ('price', models.IntegerField()),
-                ('the_most_expensive_block', models.JSONField()),
-                ('the_cheapest_block', models.JSONField()),
-                ('the_largest_number_of_transactions', models.JSONField()),
-                ('the_least_number_of_transactions', models.JSONField()),
-                ('the_largest_transaction_for_inputs', models.JSONField()),
-                ('the_largest_transaction_for_outputs', models.JSONField()),
-                ('the_most_expensive_transaction', models.JSONField()),
-                ('blockchains', models.ManyToManyField(to='status.Blockchain')),
-                ('left', models.OneToOneField(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='node_left', to='status.segmentnode')),
-                ('right', models.OneToOneField(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='node_right', to='status.segmentnode')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("time_start", models.IntegerField()),
+                ("time_end", models.IntegerField(null=True)),
+                ("price", models.IntegerField()),
+                ("the_most_expensive_block", models.JSONField()),
+                ("the_cheapest_block", models.JSONField()),
+                ("the_largest_number_of_transactions", models.JSONField()),
+                ("the_least_number_of_transactions", models.JSONField()),
+                ("the_largest_transaction_for_inputs", models.JSONField()),
+                ("the_largest_transaction_for_outputs", models.JSONField()),
+                ("the_most_expensive_transaction", models.JSONField()),
+                ("blockchains", models.ManyToManyField(to="status.Blockchain")),
+                (
+                    "left",
+                    models.OneToOneField(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="node_left",
+                        to="status.segmentnode",
+                    ),
+                ),
+                (
+                    "right",
+                    models.OneToOneField(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="node_right",
+                        to="status.segmentnode",
+                    ),
+                ),
             ],
         ),
     ]

@@ -1,0 +1,43 @@
+name: push
+on: [push]
+jobs:
+  services:
+    redis:
+      image: redis
+
+  push:
+    runs-on: [ubuntu-latest]
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    
+    - name: Install Firefox
+      run: |
+        sudo apt-get -y update
+        sudo apt-get -y install firefox
+
+    - name: Setup Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.8'
+
+    - name: Install Tox
+      run: |
+        python3 -m pip install --upgrade pip
+        python3 -m pip install tox==3.25.0
+
+    - name: Install Geckodriver
+      run: |
+        sudo wget https://github.com/mozilla/geckodriver/releases/download/v0.30.0/geckodriver-v0.30.0-linux64.tar.gz
+        tar -xvzf geckodriver-v0.30.0-linux64.tar.gz
+        chmod +x geckodriver
+        sudo mv geckodriver /usr/local/bin/
+
+    - name: Lint
+      run: python3 -m tox -e lint
+
+    - name: Tests
+      run: python3 -m tox -e py38
+      env:
+        REDIS_HOST: redis
+        REDIS_PORT: 6379
