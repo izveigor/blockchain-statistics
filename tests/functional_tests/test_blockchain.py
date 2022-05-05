@@ -2,6 +2,7 @@ from .base import FunctionalTest
 from tests.helpers import JsonData, ATTRIBUTES_OF_BLOCKCHAIN
 from status.models import Blockchain
 from blockchain.send import send_data
+from unittest import skip
 
 
 class TestBlockchain(FunctionalTest):
@@ -49,6 +50,7 @@ class TestBlockchain(FunctionalTest):
 
     def test_blockchain(self):
         self._check_blockchain()
-
+    
+    @skip
     def test_send_blockchain(self):
         self._check_blockchain(get_browser_before_blockchain_update=True)
