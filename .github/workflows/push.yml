@@ -11,18 +11,18 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v3
-    
+
     - name: Install Firefox
       run: |
-        sudo apt-get updag
-        sudo apt-get install firefox
+        sudo apt-get -y update
+        sudo apt-get -y install firefox
 
     - name: Setup Python
       uses: actions/setup-python@v2
       with:
         python-version: '3.8'
 
-    - name: Install tox
+    - name: Install Tox
       run: |
         python3 -m pip install --upgrade pip
         python3 -m pip install tox==3.25.0
