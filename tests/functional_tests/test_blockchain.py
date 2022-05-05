@@ -50,7 +50,7 @@ class TestBlockchain(FunctionalTest):
 
     def test_blockchain(self):
         self._check_blockchain()
-    
+
     @skip
     def test_send_blockchain(self):
         self._check_blockchain(get_browser_before_blockchain_update=True)
