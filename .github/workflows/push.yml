@@ -42,5 +42,5 @@ jobs:
     - name: Tests
       run: python3 -m tox -e py38
       env:
-        REDIS_HOST: localhost
+        REDIS_HOST: redis
         REDIS_PORT: 6379
