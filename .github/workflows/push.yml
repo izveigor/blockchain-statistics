@@ -45,10 +45,3 @@ jobs:
         env:
           REDIS_HOST: localhost
           REDIS_PORT: 6379
-    
-      - name: Cache
-        uses: actions/cache@v2
-        with:
-          path: ${{ hashFiles('cache.txt') }}
-          key: ${{ runner.os }}-${{ hashFiles('cache.txt') }}
-          restore-keys: ${{ runner.os }}-

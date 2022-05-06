@@ -1,3 +1,0 @@
-.tox
-/usr/bin/firefox
-/usr/bin/geckodriver
