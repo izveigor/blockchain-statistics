@@ -129,11 +129,19 @@ STATIC_URL = "status/static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 ASGI_APPLICATION = "blockchain.asgi.application"
+REDIS_HOST = "localhost"
+import sys
+
+if "test" in sys.argv:
+    REDIS_HOST = "localhost"
+else:
+    REDIS_HOST = "redis"
+
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [("localhost", 6379)],
+            "hosts": [(REDIS_HOST, 6379)],
         },
     },
 }

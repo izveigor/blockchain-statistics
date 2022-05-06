@@ -2,7 +2,7 @@ from .base import FunctionalTest
 from tests.helpers import JsonData, ATTRIBUTES_OF_BLOCKCHAIN
 from status.models import Blockchain
 from blockchain.send import send_data
-from unittest import skip
+import time
 
 
 class TestBlockchain(FunctionalTest):
@@ -16,6 +16,7 @@ class TestBlockchain(FunctionalTest):
             self.browser.get(self.live_server_url)
             Blockchain.objects.create(**blockchain_data)
             send_data(block_data, blockchain_data)
+            time.sleep(1)
         else:
             Blockchain.objects.create(**blockchain_data)
             self.browser.get(self.live_server_url)
@@ -51,6 +52,5 @@ class TestBlockchain(FunctionalTest):
     def test_blockchain(self):
         self._check_blockchain()
 
-    @skip
     def test_send_blockchain(self):
         self._check_blockchain(get_browser_before_blockchain_update=True)

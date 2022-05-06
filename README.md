@@ -13,18 +13,7 @@ command: bash -c "python manage.py migrate && python manage.py download_blocks [
                   python manage.py runserver 0.0.0.0:8080 & python manage.py start_websocket"
 ```
 The range of number of blocks from 1 to 10.
-After that, change in "blockchain/settings":
-```
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [("redis", 6379)],
-        },
-    },
-}
-```
-To start application, you can use docker-compose up
+To start application, you can use docker-compose up:
 ```
 $ docker-compose up --build
 ```
