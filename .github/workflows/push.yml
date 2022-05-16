@@ -43,7 +43,7 @@ jobs:
         run: python -m tox -e typing
 
       - name: Tests
-        run: python3 -m tox -e py38
+        run: python3 -m tox -e py39
         env:
           REDIS_HOST: localhost
           REDIS_PORT: 6379
