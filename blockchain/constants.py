@@ -2,7 +2,7 @@ from .types_ import (
     TypeBlockchainAttributes,
     TypeInputsAndOut,
     TypeUnclearedBlock,
-    TypeBlockAttributes,
+    TypeClearedBlock,
     TypeStringBlockchainAttributes,
     TypeObjectBlockchainAttributes,
 )
@@ -25,11 +25,11 @@ NEED_FIELDS_OF_TRANSACTION: tuple[str, ...] = (
     "time",
     "tx_index",
 )
+ATTRIBUTES_OF_BLOCK: tuple[str, ...] = tuple(TypeClearedBlock.__annotations__.keys())
 NEED_FIELDS_OF_INPUTS_AND_OUT: tuple[str, ...] = tuple(
     TypeInputsAndOut.__annotations__.keys()
 )
 NEED_FIELDS_OF_BLOCK: tuple[str, ...] = tuple(TypeUnclearedBlock.__annotations__.keys())
-ATTRIBUTES_OF_BLOCK: tuple[str, ...] = tuple(TypeBlockAttributes.__annotations__.keys())
 STRING_ATTRIBUTES_OF_BLOCKCHAIN: tuple[str, ...] = tuple(
     TypeStringBlockchainAttributes.__annotations__.keys()
 )

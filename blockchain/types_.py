@@ -2,9 +2,9 @@ from typing import TypedDict, Any
 
 
 class TypeClearedBlock(TypedDict, total=False):
+    height: int
     block_index: int
     hash: str
-    height: int
     time: int
 
 

@@ -9,13 +9,13 @@ from tests.helpers import (
 from selenium.common.exceptions import TimeoutException
 from blockchain.constants import NUMBER_OF_BLOCKS_ON_A_PAGE, ATTRIBUTES_OF_BLOCK
 from blockchain.send import send_data
-from django.db.models import QuerySet
+from typing import Any
 
 
 class TestBlockLive(FunctionalTest):
     """Functional test of block live update"""
 
-    def _check_fields_block(self, blocks_model: QuerySet) -> None:
+    def _check_fields_block(self, blocks_model: Any) -> None:
         block_live_update = self._get_element_by_id("body_block_live_update")
         for block_model, row in zip(
             blocks_model, block_live_update.find_elements(By.TAG_NAME, "tr")
