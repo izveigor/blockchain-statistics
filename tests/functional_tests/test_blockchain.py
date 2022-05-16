@@ -1,5 +1,9 @@
 from .base import FunctionalTest
-from tests.helpers import JsonData, ATTRIBUTES_OF_BLOCKCHAIN
+from tests.helpers import JsonData
+from blockchain.constants import (
+    STRING_ATTRIBUTES_OF_BLOCKCHAIN,
+    OBJECT_ATTRIBUTES_OF_BLOCKCHAIN,
+)
 from status.models import Blockchain
 from blockchain.send import send_data
 import time
@@ -8,7 +12,9 @@ import time
 class TestBlockchain(FunctionalTest):
     """Functional test of blockchain"""
 
-    def _check_blockchain(self, get_browser_before_blockchain_update=False):
+    def _check_blockchain(
+        self, get_browser_before_blockchain_update: bool = False
+    ) -> None:
         blockchain_data = JsonData.third_blockchain
         block_data = JsonData.first_block_result
 
@@ -21,8 +27,8 @@ class TestBlockchain(FunctionalTest):
             Blockchain.objects.create(**blockchain_data)
             self.browser.get(self.live_server_url)
 
-        attributes_string = ATTRIBUTES_OF_BLOCKCHAIN[:4]
-        attributes_objects = ATTRIBUTES_OF_BLOCKCHAIN[4:]
+        attributes_string = STRING_ATTRIBUTES_OF_BLOCKCHAIN
+        attributes_objects = OBJECT_ATTRIBUTES_OF_BLOCKCHAIN
 
         blockchain = Blockchain.objects.all()[0]
 
@@ -39,7 +45,7 @@ class TestBlockchain(FunctionalTest):
                     self._get_element_by_id(key + "_" + object_model).text,
                 )
 
-    def test_empty(self):
+    def test_empty(self) -> None:
         self.browser.get(self.live_server_url)
         empty = self._get_element_by_id("empty_blockchain")
         self.assertEqual(empty.text, "No data about blockchain!")
@@ -49,8 +55,8 @@ class TestBlockchain(FunctionalTest):
             "none",
         )
 
-    def test_blockchain(self):
+    def test_blockchain(self) -> None:
         self._check_blockchain()
 
-    def test_send_blockchain(self):
+    def test_send_blockchain(self) -> None:
         self._check_blockchain(get_browser_before_blockchain_update=True)

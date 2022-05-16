@@ -1,7 +1,7 @@
 from .base import FunctionalTest
 from update.api import get_block_api
 import json
-from unittest.mock import patch
+from unittest.mock import patch, Mock
 from tests.helpers import JsonData, create_node
 
 
@@ -9,7 +9,7 @@ class ErrorTest(FunctionalTest):
     """Functional test of errors (api errors and form errors)"""
 
     @patch("update.api.requests.get")
-    def test_api_does_not_have_status_200(self, mock_get):
+    def test_api_does_not_have_status_200(self, mock_get: Mock) -> None:
         mock_get.return_value = type("", (), {"status_code": 404, "text": None})
 
         self.browser.get(self.live_server_url)
@@ -18,7 +18,7 @@ class ErrorTest(FunctionalTest):
         self.assertEqual(block_live_update.text, "API isn't avalaible.")
 
     @patch("update.api.requests.get")
-    def test_block_does_not_have_need_fields(self, mock_get):
+    def test_block_does_not_have_need_fields(self, mock_get: Mock) -> None:
         block = JsonData.first_block
         block.pop("time")
         mock_get.return_value = type(
@@ -34,7 +34,7 @@ class ErrorTest(FunctionalTest):
         )
 
     @patch("update.api.requests.get")
-    def test_block_does_not_have_json_encoding(self, mock_get):
+    def test_block_does_not_have_json_encoding(self, mock_get: Mock) -> None:
         block = JsonData.first_block
         mock_get.return_value = type("", (), {"status_code": 200, "text": block})
 
@@ -43,7 +43,7 @@ class ErrorTest(FunctionalTest):
         block_live_update = self._get_element_by_id("body_block_live_update")
         self.assertEqual(block_live_update.text, "Block is not decrypted.")
 
-    def test_form_error_period(self):
+    def test_form_error_period(self) -> None:
         segment_tree = JsonData.segment_tree.pop("second_node")
 
         for i, time in enumerate((5, 7), start=1):
@@ -69,7 +69,7 @@ class ErrorTest(FunctionalTest):
             "Server doesn't have data in this period!",
         )
 
-    def test_form_start_less_than_end(self):
+    def test_form_start_less_than_end(self) -> None:
         segment_tree = JsonData.segment_tree.pop("first_node")
         data_for_testing = segment_tree["body"]["1"]
         create_node(
@@ -95,7 +95,7 @@ class ErrorTest(FunctionalTest):
             "Start time greater than end time!",
         )
 
-    def test_form_is_empty(self):
+    def test_form_is_empty(self) -> None:
         segment_tree = JsonData.segment_tree.pop("first_node")
         data_for_testing = segment_tree["body"]["1"]
         create_node(
@@ -121,7 +121,7 @@ class ErrorTest(FunctionalTest):
                 'Field "{}" is empty!'.format(field),
             )
 
-    def test_start_time_form_greater_than_end_time_segment_node(self):
+    def test_start_time_form_greater_than_end_time_segment_node(self) -> None:
         segment_tree = JsonData.segment_tree.pop("first_node")
         data_for_testing = segment_tree["body"]["1"]
         create_node(

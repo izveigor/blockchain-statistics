@@ -6,7 +6,7 @@ from tests.helpers import JsonData, create_node
 class FormTest(UnitTest):
     """Unit test form of timeline blockchain search"""
 
-    def test_form_valid(self):
+    def test_form_valid(self) -> None:
         segment_tree = JsonData.segment_tree.pop("first_node")
         data_for_testing = segment_tree["body"]["1"]
         create_node(
@@ -18,7 +18,7 @@ class FormTest(UnitTest):
         form = TimelineBlockchainForm(timeline)
         self.assertTrue(form.is_valid())
 
-    def test_start_less_than_end(self):
+    def test_start_less_than_end(self) -> None:
         segment_tree = JsonData.segment_tree.pop("first_node")
         data_for_testing = segment_tree["body"]["1"]
         create_node(
@@ -34,7 +34,7 @@ class FormTest(UnitTest):
         form = TimelineBlockchainForm(timeline)
         self.assertEqual(form.errors["__all__"][0], "Start time greater than end time!")
 
-    def test_error_period(self):
+    def test_error_period(self) -> None:
         segment_tree = JsonData.segment_tree.pop("second_node")
 
         for i, time in enumerate((5, 7), start=1):
@@ -51,7 +51,7 @@ class FormTest(UnitTest):
             form.errors["__all__"][0], "Server doesn't have data in this period!"
         )
 
-    def test_empty(self):
+    def test_empty(self) -> None:
         segment_tree = JsonData.segment_tree.pop("first_node")
         data_for_testing = segment_tree["body"]["1"]
         create_node(
@@ -69,7 +69,7 @@ class FormTest(UnitTest):
                 form.errors["__all__"][0], 'Field "{}" is empty!'.format(field)
             )
 
-    def test_start_time_form_greater_than_end_time_segment_node(self):
+    def test_start_time_form_greater_than_end_time_segment_node(self) -> None:
         segment_tree = JsonData.segment_tree.pop("first_node")
         data_for_testing = segment_tree["body"]["1"]
         create_node(

@@ -1,6 +1,6 @@
 from .base import UnitTest
-from unittest.mock import patch
-from tests.helpers import JsonData, empty_function, check_model_fields, get_random_hash
+from unittest.mock import patch, Mock
+from tests.helpers import JsonData, check_model_fields, get_random_hash
 from update.api import (
     _get_data_from_transactions,
     get_block_api,
@@ -18,10 +18,10 @@ class TestAPI(UnitTest):
             "", (), {"status_code": 200, "text": JsonData.latest_block_json}
         ),
     )
-    def test_get_latest_block_hash(self, mock_get):
+    def test_get_latest_block_hash(self, mock_get: Mock) -> None:
         self.assertEqual(get_latest_block_height(), JsonData.latest_block["height"])
 
-    @patch("update.api.time.sleep", empty_function)
+    @patch("update.api.time.sleep")
     @patch(
         "update.api.requests.get",
         return_value=type(
@@ -29,11 +29,13 @@ class TestAPI(UnitTest):
         ),
     )
     @patch("update.api.blockchain_update")
-    def test_block_data(self, mock_blockchain_update, mock_get):
+    def test_block_data(
+        self, mock_blockchain_update: Mock, mock_get: Mock, mock_time_sleep: Mock
+    ) -> None:
         latest_block = JsonData.latest_block
         first_block_result = JsonData.first_block_result
 
-        get_block_api(latest_block["height"]),
+        get_block_api(latest_block["height"])
         mock_blockchain_update.assert_called_once_with(
             first_block_result, JsonData.first_data_from_transactions
         )
@@ -44,7 +46,7 @@ class TestAPI(UnitTest):
 class TestGetDataFromTransactions(UnitTest):
     """Unit test of _get_data_from_transactions"""
 
-    def test_get(self):
+    def test_get(self) -> None:
         transactions = JsonData.first_block["tx"]
         self.assertEqual(
             _get_data_from_transactions(transactions),
@@ -53,11 +55,11 @@ class TestGetDataFromTransactions(UnitTest):
 
         for transaction_model, transaction in zip(
             Transaction.objects.all(),
-            reversed(sorted(transactions, key=lambda x: x["tx_index"])),
+            sorted(transactions, key=lambda x: x["tx_index"], reverse=True),  # type: ignore
         ):
             self.assertEqual(transaction_model.tx_index, transaction["tx_index"])
 
-    def test_get_if_a_previous_transaction_in_the_database(self):
+    def test_get_if_a_previous_transaction_in_the_database(self) -> None:
         transactions = JsonData.first_block["tx"]
         Transaction.objects.create(
             tx_index=transactions[0]["inputs"][0]["prev_out"]["tx_index"]
@@ -71,7 +73,7 @@ class TestGetDataFromTransactions(UnitTest):
 
         self.assertEqual(data_from_transactions, test_data_from_transactions)
 
-    def test_get_if_a_previous_transaction_in_tx_indexes(self):
+    def test_get_if_a_previous_transaction_in_tx_indexes(self) -> None:
         transactions = JsonData.first_block["tx"]
         delta = transactions[1]["inputs"][0]["prev_out"]["value"]
         transactions[1]["inputs"][0]["prev_out"]["tx_index"] = transactions[0][
@@ -84,7 +86,7 @@ class TestGetDataFromTransactions(UnitTest):
 
         self.assertEqual(data_from_transactions, test_data_from_transactions)
 
-    def test_if_inputs_addr_equals_outputs_addr(self):
+    def test_if_inputs_addr_equals_outputs_addr(self) -> None:
         transactions = JsonData.first_block["tx"]
         delta = transactions[0]["out"][1]["value"]
         transactions[0]["out"][1]["addr"] = transactions[0]["inputs"][0]["prev_out"][

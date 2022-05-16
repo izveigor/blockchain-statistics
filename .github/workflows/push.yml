@@ -38,6 +38,9 @@ jobs:
 
       - name: Lint
         run: python3 -m tox -e lint
+      
+      - name: Typing
+        run: python -m tox -e typing
 
       - name: Tests
         run: python3 -m tox -e py38

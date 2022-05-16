@@ -1,16 +1,17 @@
 from django.core.management.base import BaseCommand, CommandError
 from update.api import get_block_api, get_latest_block_height
 from status.models import Block
+from typing import Any
 
 
-class Command(BaseCommand):
+class Command(BaseCommand):  # type: ignore
     help = "Download blocks, range of number from 1 to 10."
 
-    def add_arguments(self, parser):
+    def add_arguments(self, parser: Any) -> None:
         parser.add_argument("number_of_blocks", type=int)
 
-    def handle(self, *args, **options):
-        number_of_blocks = options["number_of_blocks"]
+    def handle(self, *args: Any, **options: Any) -> None:
+        number_of_blocks: int = options["number_of_blocks"]
         if number_of_blocks > 10 or number_of_blocks < 1:
             raise CommandError(
                 "Range of number of blocks must be from 1 to 10, not %d"

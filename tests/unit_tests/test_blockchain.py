@@ -1,7 +1,7 @@
 from .base import UnitTest
 from tests.helpers import JsonData, check_model_fields
 from status.models import Blockchain
-from unittest.mock import patch
+from unittest.mock import patch, Mock
 from update.blockchain import blockchain_update
 
 
@@ -10,7 +10,7 @@ class TestBlockchainUpdate(UnitTest):
 
     @patch("update.blockchain.SegmentNode.objects.create_node")
     @patch("update.blockchain.send_data")
-    def test_create(self, mock_send_message, mock_create_node):
+    def test_create(self, mock_send_message: Mock, mock_create_node: Mock) -> None:
         first_block = JsonData.first_block_result
         second_block = JsonData.second_block_result
 

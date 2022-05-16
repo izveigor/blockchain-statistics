@@ -1,7 +1,7 @@
 from .base import UnitTest
-from tests.helpers import JsonData, create_blocks, empty_function
+from tests.helpers import JsonData, create_blocks
 from status.models import Block, Blockchain, SegmentNode
-from unittest.mock import patch
+from unittest.mock import patch, Mock
 from update.blockchain import blockchain_update
 from status.forms import TimelineBlockchainForm
 from tests.helpers import create_node, JsonData
@@ -13,12 +13,12 @@ from django.contrib.messages import get_messages
 class ViewsTest(UnitTest):
     """Unit test of views"""
 
-    def test_home_page_returns_correct(self):
+    def test_home_page_returns_correct(self) -> None:
         response = self.client.get("/")
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "index.html")
 
-    def test_paginator(self):
+    def test_paginator(self) -> None:
         create_blocks(10)
 
         response = self.client.get("/")
@@ -30,8 +30,8 @@ class ViewsTest(UnitTest):
                 list(Block.objects.all()[(number - 1) * 5 : number * 5]),
             )
 
-    @patch("update.blockchain.send_data", empty_function)
-    def test_context(self):
+    @patch("update.blockchain.send_data")
+    def test_context(self, mock_send_data: Mock) -> None:
         blockchain_update(
             JsonData.first_block_result, JsonData.first_data_from_transactions
         )
@@ -42,7 +42,7 @@ class ViewsTest(UnitTest):
 
         self.assertIsInstance(context["form"], TimelineBlockchainForm)
 
-    def test_segment_tree(self):
+    def test_segment_tree(self) -> None:
         segment_tree = JsonData.segment_tree.pop("second_node")
 
         for i in range(1, 2):
@@ -63,7 +63,7 @@ class ViewsTest(UnitTest):
             SegmentNode.objects.search_segment(1, 4),
         )
 
-    def test_error_form(self):
+    def test_error_form(self) -> None:
         segment_tree = JsonData.segment_tree.pop("second_node")
         data_for_testing = segment_tree["body"]["1"]
         create_node(

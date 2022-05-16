@@ -1,8 +1,18 @@
+from __future__ import annotations
 from django.db import models
-from django.db.models import Max
+from django.db.models import Max, QuerySet
+from typing import Union, Optional, Any, Callable
+from blockchain.types_ import (
+    TypeBlockchainAttributes,
+    TypeSearchSegment,
+    TypeBlockchainAttributes,
+    TypeBlockAttributes,
+    TypeTransactionAttributes,
+    TypeBlockchainAttributes,
+)
 
 
-class Transaction(models.Model):
+class Transaction(models.Model):  # type: ignore
     """Used tx indexes"""
 
     tx_index = models.IntegerField(primary_key=True)
@@ -11,7 +21,7 @@ class Transaction(models.Model):
         ordering = ["-tx_index"]
 
 
-class Block(models.Model):
+class Block(models.Model):  # type: ignore
     """Model of block"""
 
     height = models.IntegerField()
@@ -23,7 +33,7 @@ class Block(models.Model):
         ordering = ["-height"]
 
 
-class Blockchain(models.Model):
+class Blockchain(models.Model):  # type: ignore
     """Model of blockchain"""
 
     # About blockchain
@@ -52,7 +62,7 @@ class Blockchain(models.Model):
         ordering = ["-time_start"]
 
 
-class NodeManager(models.Manager):
+class NodeManager(models.Manager):  # type: ignore
     """Manager for segment tree"""
 
     """
@@ -64,21 +74,21 @@ class NodeManager(models.Manager):
 
     """
 
-    def _get_root(self):
+    def _get_root(self) -> Any:
         try:
             return self.get(node_left=None, node_right=None)
         except SegmentNode.DoesNotExist:
             return None
 
-    def _get_reverse_relationship(self, node, attribute):
+    def _get_reverse_relationship(self, node: SegmentNode, attribute: Any) -> Any:
         if hasattr(node, attribute):
             return getattr(node, attribute)
         else:
             return None
 
-    def _create_single_node(self, blockchain):
-        block_index = blockchain.new_block["block_index"]
-        node = self.create(
+    def _create_single_node(self, blockchain: Blockchain) -> SegmentNode:
+        block_index: int = blockchain.new_block["block_index"]
+        node: SegmentNode = self.create(
             time_start=blockchain.time_start,
             price=blockchain.new_block["price"],
             the_most_expensive_block=blockchain.new_block,
@@ -92,21 +102,27 @@ class NodeManager(models.Manager):
         node.blockchains.add(blockchain)
         return node
 
-    def _get_previous_element_by_id(self, id):
-        queryset = self.filter(id__gte=id, id__lte=id)
-        previous_id = id
+    def _get_previous_element_by_id(self, id: int) -> Optional[int]:
+        queryset: QuerySet = self.filter(id__gte=id, id__lte=id)
+        if queryset is None:
+            return None
+
+        previous_id: int = id
         while len(queryset) == 1:
             if previous_id == 1:
-                previous_id = None
-                break
+                return None
 
             previous_id -= 1
             queryset = self.filter(id__gte=previous_id, id__lte=id)
 
         return previous_id
 
-    def _set_time_end(self, time, id):
-        previous_id = self._get_previous_element_by_id(id)
+    def _set_time_end(self, time: int, id: int) -> None:
+        previous_id: Optional[int] = self._get_previous_element_by_id(id)
+        if previous_id is None:
+            return
+
+        node: SegmentNode
         if previous_id == self.first().id:
             node = self.get(id=previous_id)
         else:
@@ -118,56 +134,57 @@ class NodeManager(models.Manager):
             node.time_end = time
             node.save()
 
-    def _update_data_blockchain(self, blockchain, node):
+    def _update_data_blockchain(
+        self, blockchain: Blockchain, node: SegmentNode
+    ) -> None:
         node.price += blockchain.new_block["price"]
         node.the_most_expensive_block = max(
             node.the_most_expensive_block,
             blockchain.new_block,
-            key=lambda x: x["price"],
+            key=lambda x: x["price"],  # type: ignore
         )
         node.the_cheapest_block = min(
-            node.the_cheapest_block, blockchain.new_block, key=lambda x: x["price"]
+            node.the_cheapest_block, blockchain.new_block, key=lambda x: x["price"]  # type: ignore
         )
         node.the_largest_number_of_transactions = max(
             node.the_largest_number_of_transactions,
             blockchain.new_block,
-            key=lambda x: x["tx_number"],
+            key=lambda x: x["tx_number"],  # type: ignore
         )
         node.the_least_number_of_transactions = min(
             node.the_least_number_of_transactions,
             blockchain.new_block,
-            key=lambda x: x["tx_number"],
+            key=lambda x: x["tx_number"],  # type: ignore
         )
         node.the_largest_transaction_for_inputs = max(
             node.the_largest_transaction_for_inputs,
             blockchain.new_block_the_largest_transaction_for_inputs,
-            key=lambda x: x["number_of_inputs"],
+            key=lambda x: x["number_of_inputs"],  # type: ignore
         )
         node.the_largest_transaction_for_outputs = max(
             node.the_largest_transaction_for_outputs,
             blockchain.new_block_the_largest_transaction_for_outputs,
-            key=lambda x: x["number_of_outputs"],
+            key=lambda x: x["number_of_outputs"],  # type: ignore
         )
         node.the_most_expensive_transaction = max(
             node.the_most_expensive_transaction,
             blockchain.new_block_the_most_expensive_transaction,
-            key=lambda x: x["price"],
+            key=lambda x: x["price"],  # type: ignore
         )
         node.save()
         node.blockchains.add(blockchain)
 
-    def _update_blockchain(self, blockchain, node):
+    def _update_blockchain(self, blockchain: Blockchain, node: SegmentNode) -> None:
         if self._get_reverse_relationship(node, "node_right") is None:
             self._update_data_blockchain(blockchain, node)
-            return
         else:
             self._update_data_blockchain(blockchain, node)
-            return self._update_blockchain(blockchain, node.node_right)
+            self._update_blockchain(blockchain, node.node_right)
 
-    def _add_node(self, blockchain, root):
-        node = self._create_single_node(blockchain)
+    def _add_node(self, blockchain: Blockchain, root: SegmentNode) -> SegmentNode:
+        node: SegmentNode = self._create_single_node(blockchain)
 
-        parent = self._get_reverse_relationship(root, "node_right")
+        parent: SegmentNode = self._get_reverse_relationship(root, "node_right")
         if parent:
             parent.right = None
             parent.save()
@@ -180,37 +197,37 @@ class NodeManager(models.Manager):
             the_most_expensive_block=max(
                 root.the_most_expensive_block,
                 node.the_most_expensive_block,
-                key=lambda x: x["price"],
+                key=lambda x: x["price"],  # type: ignore
             ),
             the_cheapest_block=min(
                 root.the_cheapest_block,
                 node.the_cheapest_block,
-                key=lambda x: x["price"],
+                key=lambda x: x["price"],  # type: ignore
             ),
             the_largest_number_of_transactions=max(
                 root.the_largest_number_of_transactions,
                 node.the_largest_number_of_transactions,
-                key=lambda x: x["tx_number"],
+                key=lambda x: x["tx_number"],  # type: ignore
             ),
             the_least_number_of_transactions=min(
                 root.the_least_number_of_transactions,
                 node.the_least_number_of_transactions,
-                key=lambda x: x["tx_number"],
+                key=lambda x: x["tx_number"],  # type: ignore
             ),
             the_largest_transaction_for_inputs=max(
                 root.the_largest_transaction_for_inputs,
                 node.the_largest_transaction_for_inputs,
-                key=lambda x: x["number_of_inputs"],
+                key=lambda x: x["number_of_inputs"],  # type: ignore
             ),
             the_largest_transaction_for_outputs=max(
                 root.the_largest_transaction_for_outputs,
                 node.the_largest_transaction_for_outputs,
-                key=lambda x: x["number_of_outputs"],
+                key=lambda x: x["number_of_outputs"],  # type: ignore
             ),
             the_most_expensive_transaction=max(
                 root.the_most_expensive_transaction,
                 node.the_most_expensive_transaction,
-                key=lambda x: x["price"],
+                key=lambda x: x["price"],  # type: ignore
             ),
         )
 
@@ -225,17 +242,19 @@ class NodeManager(models.Manager):
         self._set_time_end(blockchain.time_start, node.id)
         return node
 
-    def _update_tree(self, blockchain, root):
+    def _update_tree(self, blockchain: Blockchain, root: SegmentNode) -> SegmentNode:
         if (
-            root.left is None
-            and root.right is None
-            or root.left.blockchains.count() == root.right.blockchains.count()
+            (root.left is None)
+            and (root.right is None)
+            or (root.left.blockchains.count() == root.right.blockchains.count())
         ):
             return self._add_node(blockchain, root)
         else:
             return self._update_tree(blockchain, root.right)
 
-    def create_node(self, blockchain):
+    def create_node(self, blockchain: Blockchain) -> SegmentNode:
+        node: SegmentNode
+        root: SegmentNode
         root = self._get_root()
         if root is None:
             node = self._create_single_node(blockchain)
@@ -244,46 +263,46 @@ class NodeManager(models.Manager):
         return node
 
     @staticmethod
-    def _update_nodes_attributes(attributes, node):
+    def _update_nodes_attributes(attributes: Any, node: SegmentNode) -> None:
         attributes["price"] += node.price
         attributes["the_most_expensive_block"] = max(
             attributes["the_most_expensive_block"],
             node.the_most_expensive_block,
-            key=lambda x: x["price"],
+            key=lambda x: x["price"],  # type: ignore
         )
         attributes["the_cheapest_block"] = min(
             attributes["the_cheapest_block"],
             node.the_cheapest_block,
-            key=lambda x: x["price"],
+            key=lambda x: x["price"],  # type: ignore
         )
         attributes["the_largest_number_of_transactions"] = max(
             attributes["the_largest_number_of_transactions"],
             node.the_largest_number_of_transactions,
-            key=lambda x: x["tx_number"],
+            key=lambda x: x["tx_number"],  # type: ignore
         )
         attributes["the_least_number_of_transactions"] = min(
             attributes["the_least_number_of_transactions"],
             node.the_least_number_of_transactions,
-            key=lambda x: x["tx_number"],
+            key=lambda x: x["tx_number"],  # type: ignore
         )
         attributes["the_largest_transaction_for_inputs"] = max(
             attributes["the_largest_transaction_for_inputs"],
             node.the_largest_transaction_for_inputs,
-            key=lambda x: x["number_of_inputs"],
+            key=lambda x: x["number_of_inputs"],  # type: ignore
         )
         attributes["the_largest_transaction_for_outputs"] = max(
             attributes["the_largest_transaction_for_outputs"],
             node.the_largest_transaction_for_outputs,
-            key=lambda x: x["number_of_outputs"],
+            key=lambda x: x["number_of_outputs"],  # type: ignore
         )
         attributes["the_most_expensive_transaction"] = max(
             attributes["the_most_expensive_transaction"],
             node.the_most_expensive_transaction,
-            key=lambda x: x["price"],
+            key=lambda x: x["price"],  # type: ignore
         )
 
-    def search_segment(self, time_start, time_end):
-        attributes = {
+    def search_segment(self, time_start: int, time_end: int) -> TypeSearchSegment:
+        attributes: dict[Any, Any] = {
             "price": 0,
             "the_most_expensive_block": {"price": 0},
             "the_cheapest_block": {"price": 210000000000000},
@@ -294,32 +313,34 @@ class NodeManager(models.Manager):
             "the_most_expensive_transaction": {"price": 0},
         }
 
-        visited = set()
-        node = self._get_root()
+        visited: set[SegmentNode] = set()
+        node: SegmentNode = self._get_root()
         visited.add(node)
         while not (
-            time_start == node.time_start
-            and node.time_end is not None
-            and node.time_end <= time_end
+            (time_start == node.time_start)
+            and (node.time_end is not None)
+            and (node.time_end <= time_end)
         ):
-            left = node.left
-            right = node.right
+            left: SegmentNode = node.left
+            right: SegmentNode = node.right
             if left is None and right is None:
                 break
 
-            if (
-                right.time_start <= time_start and right.time_end is None
-            ) or right.time_start <= time_start <= right.time_end:
+            if ((right.time_start <= time_start) and (right.time_end is None)) or (
+                right.time_start <= time_start <= right.time_end
+            ):
                 visited.add(right)
                 node = right
             else:
-                if right.time_end is not None and right.time_end <= time_end:
+                if (right.time_end is not None) and (right.time_end <= time_end):
                     self._update_nodes_attributes(attributes, right)
                 visited.add(left)
                 node = left
 
-        start_blockchain_model = node.blockchains.get(time_start=node.time_start)
-        start_blockchain = start_blockchain_model.__dict__
+        start_blockchain_model: Blockchain = node.blockchains.get(
+            time_start=node.time_start
+        )
+        start_blockchain: dict[str, Any] = start_blockchain_model.__dict__
         start_blockchain.pop("_state")
 
         self._update_nodes_attributes(attributes, node)
@@ -330,10 +351,10 @@ class NodeManager(models.Manager):
             right = node.right
             if right is None:
                 break
-            if time_end > left.time_end or (
-                time_end == left.time_end and time_start == time_end
+            if (time_end > left.time_end) or (
+                (time_end == left.time_end) and (time_start == time_end)
             ):
-                if left not in visited and left.time_start >= time_start:
+                if (left not in visited) and (left.time_start >= time_start):
                     self._update_nodes_attributes(attributes, left)
                 node = right
             else:
@@ -349,12 +370,12 @@ class NodeManager(models.Manager):
             self._update_nodes_attributes(attributes, node)
         return {
             "start_blockchain": start_blockchain,
-            **attributes,
+            **attributes,  # type: ignore
             "end_blockchain": end_blockchain,
         }
 
 
-class SegmentNode(models.Model):
+class SegmentNode(models.Model):  # type: ignore
     """Model of segment node"""
 
     objects = NodeManager()

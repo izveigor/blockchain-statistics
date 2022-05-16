@@ -4,11 +4,11 @@ from django.db import migrations, models
 import django.db.models.deletion
 
 
-class Migration(migrations.Migration):
+class Migration(migrations.Migration):  # type: ignore
 
     initial = True
 
-    dependencies = []
+    dependencies = []  # type: ignore
 
     operations = [
         migrations.CreateModel(

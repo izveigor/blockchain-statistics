@@ -2,6 +2,7 @@ from .base import UnitTest
 from tests.helpers import check_model_fields, create_node
 from status.models import SegmentNode, Blockchain
 from tests.helpers import JsonData
+from typing import Any
 
 
 class SegmentTreeTest(UnitTest):
@@ -19,8 +20,9 @@ class SegmentTreeTest(UnitTest):
     )
     _node_ids = [1] + [i for i in range(2, 16, 2)]
 
-    def _create_test_array(self, number):
-        start_array, array = {}, {}
+    def _create_test_array(self, number: int) -> Any:
+        start_array: dict[Any, Any] = {}
+        array: dict[Any, Any] = {}
         for attr in self._attributes:
             start_array[attr] = []
             array[attr] = []
@@ -54,14 +56,14 @@ class SegmentTreeTest(UnitTest):
                         p.append(start_array[attr][i])
                     else:
                         if function is sum:
-                            p.append(function(start_array[attr][i:j]))
+                            p.append(function(start_array[attr][i:j]))  # type: ignore
                         else:
                             p.append(
-                                function(start_array[attr][i:j], key=lambda x: x[field])
+                                function(start_array[attr][i:j], key=lambda x: x[field])  # type: ignore
                             )
                 array[attr].append(p)
 
-        def delete_state(blockchain_dict):
+        def delete_state(blockchain_dict: Any) -> Any:
             blockchain_dict.pop("_state")
             return blockchain_dict
 
@@ -84,7 +86,7 @@ class SegmentTreeTest(UnitTest):
             ],
         }
 
-    def test_create_nodes(self):
+    def test_create_nodes(self) -> None:
         segment_tree = JsonData.segment_tree
         for time, (nodes, node_id) in enumerate(
             zip(segment_tree.values(), self._node_ids), start=1
@@ -116,7 +118,7 @@ class SegmentTreeTest(UnitTest):
                     self, SegmentNode.objects.get(id=node_id), node_data, "id"
                 )
 
-    def test_search(self):
+    def test_search(self) -> None:
         segment_tree = JsonData.segment_tree
         attributes = ["start_blockchain"] + list(self._attributes) + ["end_blockchain"]
         for time, (nodes, node_id) in enumerate(

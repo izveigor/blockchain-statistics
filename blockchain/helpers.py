@@ -1,8 +1,9 @@
 import json
 from .send import send_error_to_block_live_update
+from typing import Any
 
 
-def json_decoder(data, error_message=""):
+def json_decoder(data: Any, error_message: str = "") -> Any:
     try:
         return json.loads(data)
     except:

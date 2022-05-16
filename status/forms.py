@@ -3,9 +3,10 @@ import time
 from datetime import datetime
 from django.core.exceptions import ValidationError
 from status.models import SegmentNode
+from typing import Union, Any
 
 
-class TimelineBlockchainForm(forms.Form):
+class TimelineBlockchainForm(forms.Form):  # type: ignore
     """Form for search timeline blockchain ("form_time")"""
 
     date_start = forms.CharField(
@@ -39,8 +40,9 @@ class TimelineBlockchainForm(forms.Form):
         )
     )
 
-    def clean(self):
-        cleaned_data = self.cleaned_data
+    def clean(self) -> None:
+        cleaned_data: Any = self.cleaned_data
+        field: str
         for field in ("date_start", "time_start", "date_end", "time_end"):
             if cleaned_data.get(field) is None:
                 raise ValidationError('Field "{}" is empty!'.format(field))

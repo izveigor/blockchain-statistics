@@ -7,7 +7,7 @@ from tests.helpers import check_model_fields
 class ModelsTest(UnitTest):
     """Unit test of models (Block, Transaction, Blockchain)"""
 
-    def test_block(self):
+    def test_block(self) -> None:
         block_data = JsonData.latest_block
         block_data.pop("txIndexes")
         first_block = Block.objects.create(**block_data)
@@ -18,7 +18,7 @@ class ModelsTest(UnitTest):
 
         self.assertEqual(list(Block.objects.all()), [first_block, second_block])
 
-    def test_blockchain(self):
+    def test_blockchain(self) -> None:
         first_blockchain_data = JsonData.first_blockchain
         first_blockchain = Blockchain.objects.create(**first_blockchain_data)
         check_model_fields(self, first_blockchain, first_blockchain_data)
@@ -31,7 +31,7 @@ class ModelsTest(UnitTest):
             list(Blockchain.objects.all()), [second_blockchain, first_blockchain]
         )
 
-    def test_transaction(self):
+    def test_transaction(self) -> None:
         second_block = JsonData.second_block
         first_tx_index = second_block["tx"][0]["tx_index"]
         second_tx_index = second_block["tx"][1]["tx_index"]
