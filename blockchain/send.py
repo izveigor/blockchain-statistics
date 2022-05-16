@@ -9,7 +9,7 @@ channel_layer = get_channel_layer()
 def send_data(
     block: TypeClearedBlock, blockchain_update: TypeBlockchainAttributes
 ) -> None:
-    async_to_sync(channel_layer.group_send)(  # type: ignore
+    async_to_sync(channel_layer.group_send)(
         "blockchain",
         {
             "type": "send_message",
@@ -19,6 +19,6 @@ def send_data(
 
 
 def send_error_to_block_live_update(error: str) -> None:
-    async_to_sync(channel_layer.group_send)(  # type: ignore
+    async_to_sync(channel_layer.group_send)(
         "blockchain", {"type": "send_message", "text": {"error": error}}
     )

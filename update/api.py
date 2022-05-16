@@ -144,7 +144,7 @@ def get_block_api(height: int) -> None:
     from api"""
 
     time.sleep(NEW_BLOCK_WAITING_TIME)
-    request: requests.Response = requests.get(URL["RAW_BLOCK"] + str(height))
+    request = requests.get(URL["RAW_BLOCK"] + str(height))
     if request.status_code == 200:
         data: Any = json_decoder(request.text, error_message="Block is not decrypted.")
         if data is None:
@@ -177,7 +177,7 @@ def get_latest_block_height() -> int:
 
 
 async def client() -> None:
-    async for websocket in websockets.connect(URL["WS_LATEST_BLOCK"]):  # type: ignore
+    async for websocket in websockets.connect(URL["WS_LATEST_BLOCK"]):
         print("WebSocket server runs!", flush=True)
         await websocket.send(json.dumps({"op": "blocks_sub"}))
         try:
@@ -185,6 +185,6 @@ async def client() -> None:
                 loop = asyncio.get_running_loop()
                 result = json_decoder(message)["x"]["hash"]
                 await loop.run_in_executor(None, get_block_api, result)
-        except websockets.ConnectionClosed:  # type: ignore
+        except websockets.ConnectionClosed:
             print("WebSocket server disconnects!", flush=True)
             continue
