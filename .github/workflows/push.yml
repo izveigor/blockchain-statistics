@@ -70,8 +70,10 @@ jobs:
         env:
           cache-name: cache-lint
         with:
-          path: .tox/lint/lib/**
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('.tox/lint/lib/**') }}
+          path: |
+            .tox/lint/**
+            !.tox/lint/log/**
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('.tox/lint/**') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
             ${{ runner.os }}-build-
@@ -86,15 +88,17 @@ jobs:
         env:
           cache-name: cache-typing
         with:
-          path: .tox/typing/lib/**
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('.tox/typing/lib/**') }}
+          path: |
+            .tox/typing/**
+            !.tox/typing/log/**
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('.tox/typing/**') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
             ${{ runner.os }}-build-
             ${{ runner.os }}-
 
       - name: Typing
-        run: python -m tox -e typing
+        run: python3 -m tox -e typing
 
       - name: Cache tests
         uses: actions/cache@v2
@@ -102,8 +106,10 @@ jobs:
         env:
           cache-name: cache-tests
         with:
-          path: .tox/py39/lib/**
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('.tox/py39/lib/**') }}
+          path: |
+            .tox/py39/**
+            !.tox/typing/log/**
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('.tox/py39/**') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
             ${{ runner.os }}-build-
