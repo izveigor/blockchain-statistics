@@ -10,6 +10,7 @@ from selenium.common.exceptions import TimeoutException
 from blockchain.constants import NUMBER_OF_BLOCKS_ON_A_PAGE, ATTRIBUTES_OF_BLOCK
 from blockchain.send import send_data
 from typing import Any
+import time
 
 
 class TestBlockLive(FunctionalTest):
@@ -56,6 +57,7 @@ class TestBlockLive(FunctionalTest):
         for i in range(NUMBER_OF_BLOCKS_ON_A_PAGE + 1):
             block = get_random_block_data()
             Block.objects.create(**block)
+            time.sleep(1)
             send_data(block, JsonData.first_blockchain)
 
         self._check_fields_block(Block.objects.all()[:NUMBER_OF_BLOCKS_ON_A_PAGE])
