@@ -37,6 +37,7 @@ jobs:
           sudo mv geckodriver /usr/local/bin/
 
       - name: Cache lint
+        uses: actions/cache@v2
         id: cache-blockchain-statistics
         env:
           cache-name: cache-lint
@@ -52,6 +53,7 @@ jobs:
         run: python3 -m tox -e lint
 
       - name: Cache typing
+        uses: actions/cache@v2
         id: cache-blockchain-statistics
         env:
           cache-name: cache-typing
@@ -67,6 +69,7 @@ jobs:
         run: python -m tox -e typing
 
       - name: Cache tests
+        uses: actions/cache@v2
         id: cache-blockchain-statistics
         env:
           cache-name: cache-tests
