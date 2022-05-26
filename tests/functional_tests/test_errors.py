@@ -18,7 +18,7 @@ class ErrorTest(FunctionalTest):
 
         self.browser.get(self.live_server_url)
         get_block_api(1)
-        time.sleep(1)
+        time.sleep(5)
         block_live_update = self._get_element_by_id("body_block_live_update")
         self.assertEqual(block_live_update.text, "API isn't avalaible.")
 
@@ -35,7 +35,7 @@ class ErrorTest(FunctionalTest):
 
         self.browser.get(self.live_server_url)
         get_block_api(1)
-        time.sleep(1)
+        time.sleep(5)
         block_live_update = self._get_element_by_id("body_block_live_update")
         self.assertEqual(
             block_live_update.text,
@@ -52,7 +52,7 @@ class ErrorTest(FunctionalTest):
 
         self.browser.get(self.live_server_url)
         get_block_api(1)
-        time.sleep(1)
+        time.sleep(5)
         block_live_update = self._get_element_by_id("body_block_live_update")
         self.assertEqual(block_live_update.text, "Block is not decrypted.")
 
