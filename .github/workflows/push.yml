@@ -33,6 +33,7 @@ jobs:
             ${{ runner.os }}-
 
       - name: Install Tox
+        if: ${{ steps.cache-tox.outputs.cache-hit == false }}
         run: |
           python3 -m pip install --upgrade pip
           python3 -m pip install tox==3.25.0
