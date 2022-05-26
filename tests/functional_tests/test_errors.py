@@ -3,6 +3,7 @@ from update.api import get_block_api
 import json
 from unittest.mock import patch, Mock
 from tests.helpers import JsonData, create_node
+import time
 
 
 class ErrorTest(FunctionalTest):
@@ -17,6 +18,7 @@ class ErrorTest(FunctionalTest):
 
         self.browser.get(self.live_server_url)
         get_block_api(1)
+        time.sleep(1)
         block_live_update = self._get_element_by_id("body_block_live_update")
         self.assertEqual(block_live_update.text, "API isn't avalaible.")
 
@@ -33,6 +35,7 @@ class ErrorTest(FunctionalTest):
 
         self.browser.get(self.live_server_url)
         get_block_api(1)
+        time.sleep(1)
         block_live_update = self._get_element_by_id("body_block_live_update")
         self.assertEqual(
             block_live_update.text,
@@ -49,6 +52,7 @@ class ErrorTest(FunctionalTest):
 
         self.browser.get(self.live_server_url)
         get_block_api(1)
+        time.sleep(1)
         block_live_update = self._get_element_by_id("body_block_live_update")
         self.assertEqual(block_live_update.text, "Block is not decrypted.")
 

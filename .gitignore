@@ -7,3 +7,4 @@ db_test.sqlite3-journal
 .coverage
 .tox
 .mypy_cache
+tmp
