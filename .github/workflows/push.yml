@@ -38,7 +38,7 @@ jobs:
 
       - name: Cache lint
         uses: actions/cache@v2
-        id: cache-blockchain-statistics
+        id: cache-lint
         env:
           cache-name: cache-lint
         with:
@@ -54,7 +54,7 @@ jobs:
 
       - name: Cache typing
         uses: actions/cache@v2
-        id: cache-blockchain-statistics
+        id: cache-typing
         env:
           cache-name: cache-typing
         with:
@@ -70,7 +70,7 @@ jobs:
 
       - name: Cache tests
         uses: actions/cache@v2
-        id: cache-blockchain-statistics
+        id: cache-tests
         env:
           cache-name: cache-tests
         with:
