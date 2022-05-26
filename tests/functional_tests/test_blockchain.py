@@ -22,6 +22,7 @@ class TestBlockchain(FunctionalTest):
             self.browser.get(self.live_server_url)
             Blockchain.objects.create(**blockchain_data)
             send_data(block_data, blockchain_data)
+            time.sleep(3)
         else:
             Blockchain.objects.create(**blockchain_data)
             self.browser.get(self.live_server_url)
@@ -31,7 +32,6 @@ class TestBlockchain(FunctionalTest):
 
         blockchain = Blockchain.objects.all()[0]
 
-        time.sleep(10)
         for field in attributes_string:
             self.assertEqual(
                 self._get_element_by_id(field).text, str(getattr(blockchain, field))
