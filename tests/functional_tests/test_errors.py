@@ -8,8 +8,11 @@ from tests.helpers import JsonData, create_node
 class ErrorTest(FunctionalTest):
     """Functional test of errors (api errors and form errors)"""
 
+    @patch("update.api.time.sleep")
     @patch("update.api.requests.get")
-    def test_api_does_not_have_status_200(self, mock_get: Mock) -> None:
+    def test_api_does_not_have_status_200(
+        self, mock_get: Mock, mock_time_sleep: Mock
+    ) -> None:
         mock_get.return_value = type("", (), {"status_code": 404, "text": None})
 
         self.browser.get(self.live_server_url)
@@ -17,8 +20,11 @@ class ErrorTest(FunctionalTest):
         block_live_update = self._get_element_by_id("body_block_live_update")
         self.assertEqual(block_live_update.text, "API isn't avalaible.")
 
+    @patch("update.api.time.sleep")
     @patch("update.api.requests.get")
-    def test_block_does_not_have_need_fields(self, mock_get: Mock) -> None:
+    def test_block_does_not_have_need_fields(
+        self, mock_get: Mock, mock_time_sleep: Mock
+    ) -> None:
         block = JsonData.first_block
         block.pop("time")
         mock_get.return_value = type(
@@ -33,8 +39,11 @@ class ErrorTest(FunctionalTest):
             "New block doesn't have need fields, it won't be saved in database.",
         )
 
+    @patch("update.api.time.sleep")
     @patch("update.api.requests.get")
-    def test_block_does_not_have_json_encoding(self, mock_get: Mock) -> None:
+    def test_block_does_not_have_json_encoding(
+        self, mock_get: Mock, mock_time_sleep: Mock
+    ) -> None:
         block = JsonData.first_block
         mock_get.return_value = type("", (), {"status_code": 200, "text": block})
 
