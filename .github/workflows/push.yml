@@ -36,11 +36,47 @@ jobs:
           chmod +x geckodriver
           sudo mv geckodriver /usr/local/bin/
 
+      - name: Cache lint
+        id: cache-blockchain-statistics
+        env:
+          cache-name: cache-lint
+        with:
+          path: .tox/lint/lib/**
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('.tox/lint/lib/**') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
       - name: Lint
         run: python3 -m tox -e lint
-      
+
+      - name: Cache typing
+        id: cache-blockchain-statistics
+        env:
+          cache-name: cache-typing
+        with:
+          path: .tox/typing/lib/**
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('.tox/typing/lib/**') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
       - name: Typing
         run: python -m tox -e typing
+
+      - name: Cache tests
+        id: cache-blockchain-statistics
+        env:
+          cache-name: cache-tests
+        with:
+          path: .tox/py39/lib/**
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('.tox/py39/lib/**') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
 
       - name: Tests
         run: python3 -m tox -e py39
