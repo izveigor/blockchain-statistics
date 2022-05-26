@@ -22,7 +22,7 @@ class TestBlockchain(FunctionalTest):
             self.browser.get(self.live_server_url)
             Blockchain.objects.create(**blockchain_data)
             send_data(block_data, blockchain_data)
-            time.sleep(1)
+            time.sleep(2)
         else:
             Blockchain.objects.create(**blockchain_data)
             self.browser.get(self.live_server_url)
