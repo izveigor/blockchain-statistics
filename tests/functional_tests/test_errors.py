@@ -3,30 +3,22 @@ from update.api import get_block_api
 import json
 from unittest.mock import patch, Mock
 from tests.helpers import JsonData, create_node
-import time
 
 
 class ErrorTest(FunctionalTest):
     """Functional test of errors (api errors and form errors)"""
 
-    @patch("update.api.time.sleep")
     @patch("update.api.requests.get")
-    def test_api_does_not_have_status_200(
-        self, mock_get: Mock, mock_time_sleep: Mock
-    ) -> None:
+    def test_api_does_not_have_status_200(self, mock_get: Mock) -> None:
         mock_get.return_value = type("", (), {"status_code": 404, "text": None})
 
         self.browser.get(self.live_server_url)
         get_block_api(1)
-        time.sleep(5)
         block_live_update = self._get_element_by_id("body_block_live_update")
         self.assertEqual(block_live_update.text, "API isn't avalaible.")
 
-    @patch("update.api.time.sleep")
     @patch("update.api.requests.get")
-    def test_block_does_not_have_need_fields(
-        self, mock_get: Mock, mock_time_sleep: Mock
-    ) -> None:
+    def test_block_does_not_have_need_fields(self, mock_get: Mock) -> None:
         block = JsonData.first_block
         block.pop("time")
         mock_get.return_value = type(
@@ -35,24 +27,19 @@ class ErrorTest(FunctionalTest):
 
         self.browser.get(self.live_server_url)
         get_block_api(1)
-        time.sleep(5)
         block_live_update = self._get_element_by_id("body_block_live_update")
         self.assertEqual(
             block_live_update.text,
             "New block doesn't have need fields, it won't be saved in database.",
         )
 
-    @patch("update.api.time.sleep")
     @patch("update.api.requests.get")
-    def test_block_does_not_have_json_encoding(
-        self, mock_get: Mock, mock_time_sleep: Mock
-    ) -> None:
+    def test_block_does_not_have_json_encoding(self, mock_get: Mock) -> None:
         block = JsonData.first_block
         mock_get.return_value = type("", (), {"status_code": 200, "text": block})
 
         self.browser.get(self.live_server_url)
         get_block_api(1)
-        time.sleep(5)
         block_live_update = self._get_element_by_id("body_block_live_update")
         self.assertEqual(block_live_update.text, "Block is not decrypted.")
 
