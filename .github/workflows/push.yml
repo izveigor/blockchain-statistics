@@ -14,11 +14,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Install Firefox
-        run: |
-          sudo apt-get -y update
-          sudo apt-get -y install firefox
-
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
@@ -29,7 +24,40 @@ jobs:
           python3 -m pip install --upgrade pip
           python3 -m pip install tox==3.25.0
 
+      - name: Cache Firefox
+        uses: actions/cache@v2
+        id: cache-firefox
+        env:
+          cache-name: cache-firefox
+        with:
+          path: /usr/local/bin/firefox
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-firefox
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      - name: Install Firefox
+        if: ${{ steps.cache-firefox.outputs.cache-hit == false }}
+        run: |
+          sudo apt-get -y update
+          sudo apt-get -y install firefox
+
+      - name: Cache Geckodriver
+        uses: actions/cache@v2
+        id: cache-geckodriver
+        env:
+          cache-name: cache-geckodriver
+        with:
+          path: /usr/local/bin/geckodriver
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-geckodriver
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
       - name: Install Geckodriver
+        if: ${{ steps.cache-geckodriver.outputs.cache-hit == false }}
         run: |
           sudo wget https://github.com/mozilla/geckodriver/releases/download/v0.30.0/geckodriver-v0.30.0-linux64.tar.gz
           tar -xvzf geckodriver-v0.30.0-linux64.tar.gz
