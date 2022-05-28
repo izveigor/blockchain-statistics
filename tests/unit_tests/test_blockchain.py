@@ -1,8 +1,10 @@
-from .base import UnitTest
-from tests.helpers import JsonData, check_model_fields
+from unittest.mock import Mock, patch
+
 from status.models import Blockchain
-from unittest.mock import patch, Mock
+from tests.helpers import JsonData, check_model_fields
 from update.blockchain import blockchain_update
+
+from .base import UnitTest
 
 
 class TestBlockchainUpdate(UnitTest):

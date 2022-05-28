@@ -1,9 +1,11 @@
-from django import forms
 import time
 from datetime import datetime
+from typing import Any, Union
+
+from django import forms
 from django.core.exceptions import ValidationError
+
 from status.models import SegmentNode
-from typing import Union, Any
 
 
 class TimelineBlockchainForm(forms.Form):  # type: ignore

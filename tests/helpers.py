@@ -1,18 +1,20 @@
-from blockchain.helpers import json_decoder
-from status.models import Block, Blockchain, SegmentNode
-from blockchain.types_ import (
-    TypeUnclearedBlock,
-    TypeClearedBlock,
-    TypeTransactionAttributes,
-    TypeBlockchainAttributes,
-    TypeLatestBlock,
-)
-from django.db.models import Max, Model
-from typing import Any, TypedDict, Optional
-from unittest import TestCase
 import json
-import string
 import random
+import string
+from typing import Any, Optional, TypedDict
+from unittest import TestCase
+
+from django.db.models import Max, Model
+
+from blockchain.helpers import json_decoder
+from blockchain.types_ import (
+    TypeBlockchainAttributes,
+    TypeClearedBlock,
+    TypeLatestBlock,
+    TypeTransactionAttributes,
+    TypeUnclearedBlock,
+)
+from status.models import Block, Blockchain, SegmentNode
 
 
 class _JsonData:

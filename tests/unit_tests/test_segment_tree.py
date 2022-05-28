@@ -1,8 +1,9 @@
-from .base import UnitTest
-from tests.helpers import check_model_fields, create_node
-from status.models import SegmentNode, Blockchain
-from tests.helpers import JsonData
 from typing import Any
+
+from status.models import Blockchain, SegmentNode
+from tests.helpers import JsonData, check_model_fields, create_node
+
+from .base import UnitTest
 
 
 class SegmentTreeTest(UnitTest):

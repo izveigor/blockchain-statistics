@@ -1,14 +1,15 @@
 from __future__ import annotations
+
+from typing import Any, Callable, Optional, Union
+
 from django.db import models
 from django.db.models import Max, QuerySet
-from typing import Union, Optional, Any, Callable
+
 from blockchain.types_ import (
+    TypeBlockAttributes,
     TypeBlockchainAttributes,
     TypeSearchSegment,
-    TypeBlockchainAttributes,
-    TypeBlockAttributes,
     TypeTransactionAttributes,
-    TypeBlockchainAttributes,
 )
 
 

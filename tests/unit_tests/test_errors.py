@@ -1,9 +1,11 @@
-from .base import UnitTest
+import json
+from unittest.mock import Mock, patch
+
 from blockchain.send import send_error_to_block_live_update
-from unittest.mock import patch, Mock
 from tests.helpers import JsonData
 from update.api import get_block_api
-import json
+
+from .base import UnitTest
 
 
 @patch("update.api.time.sleep")

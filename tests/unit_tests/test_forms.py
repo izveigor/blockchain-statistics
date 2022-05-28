@@ -1,6 +1,7 @@
-from .base import UnitTest
 from status.forms import TimelineBlockchainForm
 from tests.helpers import JsonData, create_node
+
+from .base import UnitTest
 
 
 class FormTest(UnitTest):

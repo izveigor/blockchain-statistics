@@ -1,8 +1,10 @@
-from .base import FunctionalTest
-from update.api import get_block_api
 import json
-from unittest.mock import patch, Mock
+from unittest.mock import Mock, patch
+
 from tests.helpers import JsonData, create_node
+from update.api import get_block_api
+
+from .base import FunctionalTest
 
 
 class ErrorTest(FunctionalTest):

@@ -1,7 +1,9 @@
-from django.core.management.base import BaseCommand
 import asyncio
-from update.api import client
 from typing import Any
+
+from django.core.management.base import BaseCommand
+
+from update.api import client
 
 
 class Command(BaseCommand):  # type: ignore

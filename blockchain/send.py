@@ -1,7 +1,7 @@
-from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
-from .types_ import TypeClearedBlock, TypeBlockchainAttributes
+from channels.layers import get_channel_layer
 
+from .types_ import TypeBlockchainAttributes, TypeClearedBlock
 
 channel_layer = get_channel_layer()
 

@@ -1,12 +1,15 @@
-from django.views.generic import ListView
-from .models import Block, Blockchain, SegmentNode
-from .forms import TimelineBlockchainForm
-from django.http import JsonResponse, HttpResponse, HttpRequest
-from blockchain.helpers import json_decoder
-from blockchain.constants import NUMBER_OF_BLOCKS_ON_A_PAGE
-from django.shortcuts import render
-from django.contrib import messages
 from typing import Any
+
+from django.contrib import messages
+from django.http import HttpRequest, HttpResponse, JsonResponse
+from django.shortcuts import render
+from django.views.generic import ListView
+
+from blockchain.constants import NUMBER_OF_BLOCKS_ON_A_PAGE
+from blockchain.helpers import json_decoder
+
+from .forms import TimelineBlockchainForm
+from .models import Block, Blockchain, SegmentNode
 
 
 class BlockListView(ListView):  # type: ignore

@@ -1,8 +1,9 @@
-from asgiref.sync import async_to_sync
-from channels.layers import get_channel_layer
 import json
-from channels.generic.websocket import AsyncWebsocketConsumer
 from typing import Any
+
+from asgiref.sync import async_to_sync
+from channels.generic.websocket import AsyncWebsocketConsumer
+from channels.layers import get_channel_layer
 
 
 class BlockConsumer(AsyncWebsocketConsumer):  # type: ignore

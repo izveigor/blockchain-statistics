@@ -1,12 +1,14 @@
-from .base import FunctionalTest
-from tests.helpers import JsonData
-from blockchain.constants import (
-    STRING_ATTRIBUTES_OF_BLOCKCHAIN,
-    OBJECT_ATTRIBUTES_OF_BLOCKCHAIN,
-)
-from status.models import Blockchain
-from blockchain.send import send_data
 import time
+
+from blockchain.constants import (
+    OBJECT_ATTRIBUTES_OF_BLOCKCHAIN,
+    STRING_ATTRIBUTES_OF_BLOCKCHAIN,
+)
+from blockchain.send import send_data
+from status.models import Blockchain
+from tests.helpers import JsonData
+
+from .base import FunctionalTest
 
 
 class TestBlockchain(FunctionalTest):

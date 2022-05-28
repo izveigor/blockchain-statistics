@@ -1,16 +1,15 @@
-from .base import FunctionalTest
-from selenium.webdriver.common.by import By
-from status.models import Block
-from tests.helpers import (
-    create_blocks,
-    get_random_block_data,
-    JsonData,
-)
-from selenium.common.exceptions import TimeoutException
-from blockchain.constants import NUMBER_OF_BLOCKS_ON_A_PAGE, ATTRIBUTES_OF_BLOCK
-from blockchain.send import send_data
-from typing import Any
 import time
+from typing import Any
+
+from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.common.by import By
+
+from blockchain.constants import ATTRIBUTES_OF_BLOCK, NUMBER_OF_BLOCKS_ON_A_PAGE
+from blockchain.send import send_data
+from status.models import Block
+from tests.helpers import JsonData, create_blocks, get_random_block_data
+
+from .base import FunctionalTest
 
 
 class TestBlockLive(FunctionalTest):

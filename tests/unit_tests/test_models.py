@@ -1,7 +1,7 @@
-from .base import UnitTest
-from tests.helpers import JsonData
 from status.models import Block, Blockchain, Transaction
-from tests.helpers import check_model_fields
+from tests.helpers import JsonData, check_model_fields
+
+from .base import UnitTest
 
 
 class ModelsTest(UnitTest):

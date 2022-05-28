@@ -1,6 +1,7 @@
 import json
-from .send import send_error_to_block_live_update
 from typing import Any
+
+from .send import send_error_to_block_live_update
 
 
 def json_decoder(data: Any, error_message: str = "") -> Any:

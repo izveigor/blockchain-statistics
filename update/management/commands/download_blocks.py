@@ -1,7 +1,9 @@
-from django.core.management.base import BaseCommand, CommandError
-from update.api import get_block_api, get_latest_block_height
-from status.models import Block
 from typing import Any
+
+from django.core.management.base import BaseCommand, CommandError
+
+from status.models import Block
+from update.api import get_block_api, get_latest_block_height
 
 
 class Command(BaseCommand):  # type: ignore

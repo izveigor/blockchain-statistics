@@ -1,12 +1,11 @@
 from .types_ import (
     TypeBlockchainAttributes,
-    TypeInputsAndOut,
-    TypeUnclearedBlock,
     TypeClearedBlock,
-    TypeStringBlockchainAttributes,
+    TypeInputsAndOut,
     TypeObjectBlockchainAttributes,
+    TypeStringBlockchainAttributes,
+    TypeUnclearedBlock,
 )
-
 
 URL: dict[str, str] = {
     "WS_LATEST_BLOCK": "wss://ws.blockchain.info/inv",

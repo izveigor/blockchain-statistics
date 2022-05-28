@@ -1,10 +1,13 @@
 from io import StringIO
+from unittest.mock import Mock, call, patch
+
 from django.core.management import call_command
-from .base import UnitTest
-from unittest.mock import patch, call, Mock
-from tests.helpers import JsonData
 from django.core.management.base import CommandError
+
 from status.models import Block
+from tests.helpers import JsonData
+
+from .base import UnitTest
 
 
 class DownloadBlocksTest(UnitTest):

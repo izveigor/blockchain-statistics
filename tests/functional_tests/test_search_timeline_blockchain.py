@@ -1,19 +1,20 @@
-from .base import FunctionalTest
-from tests.helpers import JsonData, create_node
+from typing import Any, Union
+
 from blockchain.constants import (
-    STRING_ATTRIBUTES_OF_BLOCKCHAIN,
     OBJECT_ATTRIBUTES_OF_BLOCKCHAIN,
+    STRING_ATTRIBUTES_OF_BLOCKCHAIN,
 )
-from status.models import SegmentNode
 from blockchain.send import send_data
 from blockchain.types_ import (
     TypeBlockAttributes,
-    TypeTransactionAttributes,
     TypeBlockchainAttributes,
     TypeSearchSegment,
+    TypeTransactionAttributes,
 )
-from status.models import Blockchain
-from typing import Any, Union
+from status.models import Blockchain, SegmentNode
+from tests.helpers import JsonData, create_node
+
+from .base import FunctionalTest
 
 
 class TimelineTest(FunctionalTest):

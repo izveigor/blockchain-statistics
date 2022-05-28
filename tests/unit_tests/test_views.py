@@ -1,13 +1,15 @@
-from .base import UnitTest
-from tests.helpers import JsonData, create_blocks
-from status.models import Block, Blockchain, SegmentNode
-from unittest.mock import patch, Mock
-from update.blockchain import blockchain_update
-from status.forms import TimelineBlockchainForm
-from tests.helpers import create_node, JsonData
-from blockchain.helpers import json_decoder
 import json
+from unittest.mock import Mock, patch
+
 from django.contrib.messages import get_messages
+
+from blockchain.helpers import json_decoder
+from status.forms import TimelineBlockchainForm
+from status.models import Block, Blockchain, SegmentNode
+from tests.helpers import JsonData, create_blocks, create_node
+from update.blockchain import blockchain_update
+
+from .base import UnitTest
 
 
 class ViewsTest(UnitTest):

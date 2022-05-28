@@ -1,12 +1,14 @@
-from .base import UnitTest
-from unittest.mock import patch, Mock
+from unittest.mock import Mock, patch
+
+from status.models import Block, Transaction
 from tests.helpers import JsonData, check_model_fields, get_random_hash
 from update.api import (
     _get_data_from_transactions,
     get_block_api,
     get_latest_block_height,
 )
-from status.models import Transaction, Block
+
+from .base import UnitTest
 
 
 class TestAPI(UnitTest):

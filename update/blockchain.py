@@ -1,11 +1,12 @@
-from status.models import Blockchain, SegmentNode
 from typing import Any, Union
+
 from blockchain.send import send_data
 from blockchain.types_ import (
-    TypeBlockchainAttributes,
     TypeBlockAttributes,
+    TypeBlockchainAttributes,
     TypeDataFromTransaction,
 )
+from status.models import Blockchain, SegmentNode
 
 
 def blockchain_update(

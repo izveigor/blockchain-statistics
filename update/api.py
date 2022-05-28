@@ -1,27 +1,30 @@
-import requests
-from blockchain.helpers import json_decoder
-from status.models import Block, Transaction
+import asyncio
+import json
 import time
+from typing import Any, Union
+
+import requests
+import websockets
+
 from blockchain.constants import (
-    URL,
-    NEW_BLOCK_WAITING_TIME,
+    NEED_FIELDS_OF_BLOCK,
     NEED_FIELDS_OF_INPUTS_AND_OUT,
     NEED_FIELDS_OF_TRANSACTION,
-    NEED_FIELDS_OF_BLOCK,
+    NEW_BLOCK_WAITING_TIME,
+    URL,
 )
-import json
-import asyncio
-import websockets
-from .blockchain import blockchain_update
+from blockchain.helpers import json_decoder
 from blockchain.send import send_error_to_block_live_update
 from blockchain.types_ import (
-    TypeUnclearedBlock,
+    TypeBlockAttributes,
+    TypeDataFromTransaction,
     TypeInputsAndOut,
     TypeTransactionAttributes,
-    TypeDataFromTransaction,
-    TypeBlockAttributes,
+    TypeUnclearedBlock,
 )
-from typing import Any, Union
+from status.models import Block, Transaction
+
+from .blockchain import blockchain_update
 
 
 def _clear_data(data: Any, need_fields_tuple: tuple[str, ...]) -> Any:
