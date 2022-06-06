@@ -23,7 +23,7 @@ jobs:
           python-version: '3.9'
       
       - name: Set environment variables
-        run: cat ./.env.dev >> $GITHUB_ENV
+        run: export $(cat ../.env.dev)
 
       - name: Cache Tox (pip)
         uses: actions/cache@v2
