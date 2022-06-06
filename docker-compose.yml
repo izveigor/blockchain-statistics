@@ -1,17 +1,22 @@
-version: '3'
+version: '3.8'
 
 
 services:
 
   web:
-    build: .
-    command: bash -c "python3 manage.py migrate && 
-                      python3 manage.py runserver 0.0.0.0:8080 & python3 manage.py start_websocket"
-    volumes: 
-      - .:/code
+    build:
+      context: ./src
+      dockerfile: Dockerfile
+    container_name: blockchain_statistics_web
+    command: bash -c "python3 manage.py runserver 0.0.0.0:8000 & 
+                      python3 manage.py start_websocket"
+    volumes:
+      - ./app/:/usr/src/app/
+    env_file:
+      - ./.env.dev
     ports:
-      - 8080:8080
-    links:
+      - 8000:8000
+    depends_on:
      - redis
 
   redis:

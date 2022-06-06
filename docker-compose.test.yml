@@ -1,0 +1,22 @@
+version: '3.8'
+
+
+services:
+
+  web:
+    build: 
+      context: ./src
+      dockerfile: Dockerfile.test
+    container_name: blockchain_statistics_test_web
+    command: bash -c "python3 -m tox --verbose"
+    env_file:
+      - ./.env.dev
+    expose:
+      - 8000:8000
+    depends_on:
+     - redis
+
+  redis:
+    image: redis
+    ports: 
+      - 6379:6379

@@ -1,0 +1,10 @@
+__pycache__
+*pyc
+geckodriver.log
+db_test.sqlite3
+db_test.sqlite3-journal
+.coverage
+.tox
+.mypy_cache
+.github
+tmp

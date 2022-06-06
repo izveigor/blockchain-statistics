@@ -7,18 +7,21 @@ After that data is analyzed and showed the user.
 ![2](https://user-images.githubusercontent.com/68601180/155368750-776f3ea8-f2a2-421a-836e-daeb158f107b.JPG)
 
 ## Installation
-If you want to download some latest blocks, change the docker-compose file:
+If you want to download some latest blocks, change src/entrypoint.sh file:
 ```
-command: bash -c "python manage.py migrate && python manage.py download_blocks [number of blocks] && 
-                  python manage.py runserver 0.0.0.0:8080 & python manage.py start_websocket"
+#!bin/sh
+if [ ! -f db.sqlite3 ]; then
+    python3 manage.py migrate
+    # You can download blocks from 0 to 10
+    python3 manage.py download_blocks [0 to 10]
+fi
+exec "$@"
 ```
-The range of number of blocks from 1 to 10.
 To start application, you can use docker-compose up:
 ```
-$ docker-compose up --build
+$ docker-compose -f docker-compose.prod.yml up --build
 ```
-After that, meet '127.0.0.1:8080'
-
+After that, meet 'localhost:1337'
 
 ## Application's components:
 Main page of application includes three components (windows),
