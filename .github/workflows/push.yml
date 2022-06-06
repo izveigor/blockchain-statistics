@@ -21,9 +21,6 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: '3.9'
-      
-      - name: Set environment variables
-        run: export $(cat ../.env.dev)
 
       - name: Cache Tox (pip)
         uses: actions/cache@v2
