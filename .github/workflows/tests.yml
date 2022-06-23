@@ -23,7 +23,7 @@ jobs:
           python-version: '3.9'
 
       - name: Set environment variables
-        run: cat config/.env.test.redis >> $GITHUB_ENV
+        run: cat ../config/.env.test.redis >> $GITHUB_ENV
 
       - name: Cache Tox (pip)
         uses: actions/cache@v2
@@ -138,5 +138,5 @@ jobs:
       - name: Tests
         run: python3 -m tox -e py39
         env:
-          REDIS_HOST: {{ env.REDIS_HOST }}
-          REDIS_PORT: {{ env.REDIS_PORT }}
+          REDIS_HOST: ${{ env.REDIS_HOST }}
+          REDIS_PORT: ${{ env.REDIS_PORT }}
