@@ -1,19 +1,19 @@
-version: '3.8'
+version: '3'
 
 
 services:
 
   web:
-    build:
-      context: ./src
-      dockerfile: Dockerfile
+    build: ./src
+    restart: always
     container_name: blockchain_statistics_web
-    command: bash -c "python3 manage.py runserver 0.0.0.0:8000 & 
+    command: bash -c "python3 manage.py runserver 0.0.0.0:8000 &
                       python3 manage.py start_websocket"
     volumes:
-      - ./app/:/usr/src/app/
+      - ./src/:/usr/src/app/src/
     env_file:
-      - ./.env.dev
+      - ./config/.env.dev
+      - ./config/.env.prod.redis
     ports:
       - 8000:8000
     depends_on:
@@ -21,5 +21,9 @@ services:
 
   redis:
     image: redis
-    ports: 
+    restart: always
+    container_name: blockchain_statistics_redis
+    env_file:
+      - ./config/.env.prod.redis
+    ports:
       - 6379:6379

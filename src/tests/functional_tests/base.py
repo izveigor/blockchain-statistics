@@ -18,6 +18,7 @@ class FunctionalTest(ChannelsLiveServerTestCase):  # type: ignore
         super().setUpClass()
         try:
             self.browser = webdriver.Firefox(options=firefox_options)
+            self.browser.set_window_size(1600, 800)
         except:
             super().tearDownClass()
             raise

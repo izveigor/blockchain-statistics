@@ -8,3 +8,4 @@ db_test.sqlite3-journal
 .tox
 .mypy_cache
 tmp
+.python-version

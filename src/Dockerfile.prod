@@ -6,8 +6,8 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
 RUN pip install --upgrade pip
-COPY ./requirements.txt .
-RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels -r requirements.txt
+COPY ./requirements-prod.txt .
+RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels -r requirements-prod.txt
 
 # Main
 FROM python:3.9
@@ -19,11 +19,12 @@ RUN mkdir $APP_HOME/static
 WORKDIR $APP_HOME
 
 COPY --from=builder /usr/src/app/wheels /wheels
-COPY --from=builder /usr/src/app/requirements.txt .
+COPY --from=builder /usr/src/app/requirements-prod.txt .
 RUN pip install --no-cache /wheels/*
 
 COPY ./entrypoint.sh .
 RUN chmod +x ./entrypoint.sh
-ENTRYPOINT ["bash", "./entrypoint.sh"]
 
 COPY . $APP_HOME
+
+ENTRYPOINT ["bash", "/home/app/web/entrypoint.sh"]
