@@ -10,6 +10,9 @@ jobs:
     services:
       redis:
         image: redis
+        env:
+          REDIS_HOST: localhost
+          REDIS_PORT: 6379
         ports:
           - 6379:6379
 
@@ -21,9 +24,6 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: '3.9'
-
-      - name: Set environment variables
-        run: cat ../config/.env.test.redis >> $GITHUB_ENV
       
       - name: Move static files
         run: mv static status
@@ -141,5 +141,5 @@ jobs:
       - name: Tests
         run: python3 -m tox -e py39
         env:
-          REDIS_HOST: ${{ env.REDIS_HOST }}
-          REDIS_PORT: ${{ env.REDIS_PORT }}
+          REDIS_HOST: localhost
+          REDIS_PORT: 6379
