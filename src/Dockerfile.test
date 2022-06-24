@@ -15,3 +15,4 @@ RUN chmod +x geckodriver
 RUN mv geckodriver /usr/local/bin/
 
 COPY . .
+RUN mv static status

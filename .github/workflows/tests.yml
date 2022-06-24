@@ -24,6 +24,9 @@ jobs:
 
       - name: Set environment variables
         run: cat ../config/.env.test.redis >> $GITHUB_ENV
+      
+      - name: Move static files
+        run: mv static status
 
       - name: Cache Tox (pip)
         uses: actions/cache@v2
